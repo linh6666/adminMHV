@@ -1,11 +1,12 @@
 import {
-  IconGauge,
+
   IconNotes,
   IconCalendarStats,
   IconPresentationAnalytics,
   IconFileAnalytics,
   IconAdjustments,
   IconLock,
+  IconUser,
 } from '@tabler/icons-react';
 
 // Kiểu cho link con
@@ -25,37 +26,61 @@ export type NavItem = {
 
 // Dữ liệu sidebar
 export const mockdata: NavItem[] = [
-  { label: 'Dashboard', icon: IconGauge, link: '/dashboard' },
+  { label: 'Quản lý tài khoản',
+     icon: IconUser, 
+       initiallyOpened: true,
+         links: [
+      { label: 'Quản lý người dùng và phân quyền ', link: '/Tai-khoan' },
+      
+    ],
+  
+    },
   {
-    label: 'Market news',
+    label: 'Quản lý khách hàng',
     icon: IconNotes,
     initiallyOpened: true,
     links: [
-      { label: 'Overview', link: '/market/overview' },
-      { label: 'Forecasts', link: '/market/forecasts' },
-      { label: 'Outlook', link: '/market/outlook' },
-      { label: 'Real time', link: '/market/realtime' },
+      { label: 'Danh sách khách hàng', link: '/market/overview' },
+      { label: 'Danh sách nhóm khách hàng', link: '/market/forecasts' },
+      { label: 'Tổng hợp trao đổi của người dùng', link: '/market/outlook' },
+      { label: 'Tổng hợp đánh giá của người dùng', link: '/market/realtime' },
     ],
   },
   {
-    label: 'Releases',
+    label: 'Đơn hàng - Đơn sửa chữa',
     icon: IconCalendarStats,
     links: [
-      { label: 'Upcoming releases', link: '/releases/upcoming' },
-      { label: 'Previous releases', link: '/releases/previous' },
-      { label: 'Releases schedule', link: '/releases/schedule' },
+      { label: 'Danh sách đơn hàng', link: '/releases/upcoming' },
+      { label: 'Đặt lịch sửa chữa', link: '/releases/previous' },
+      { label: 'Đặt lịch mua hàng', link: '/releases/schedule' },
     ],
   },
-  { label: 'Analytics', icon: IconPresentationAnalytics, link: '/analytics' },
-  { label: 'Contracts', icon: IconFileAnalytics, link: '/contracts' },
-  { label: 'Settings', icon: IconAdjustments, link: '/settings' },
+  { label: 'Quản lý sản phẩm', icon: IconPresentationAnalytics,
+      initiallyOpened: true,
+       links: [
+      { label: 'Danh sách sản phẩm', link: '/market/overview' },
+      { label: 'Danh mục sản phẩm', link: '/market/forecasts' },
+      { label: 'Quản lý thuộc tính', link: '/market/outlook' },
+      { label: 'Danh sách thương hiệu', link: '/market/realtime' },
+    ],
+   },
+  
+  { label: 'Quản lý bài viết ', icon: IconFileAnalytics,
+     initiallyOpened: true,
+      links: [
+      { label: 'Danh mục bải viết', link: '/market/overview' },
+      { label: 'Bài viết ', link: '/market/forecasts' },
+     
+    ],
+   },
+ 
   {
-    label: 'Security',
+    label: 'Quản lý Marketing',
     icon: IconLock,
     links: [
-      { label: 'Enable 2FA', link: '/security/2fa' },
-      { label: 'Change password', link: '/security/change-password' },
-      { label: 'Recovery codes', link: '/security/recovery' },
+      { label: 'Danh sách banner', link: '/security/2fa' },
+      { label: 'Danh sách vị trí baner', link: '/security/change-password' },
+  
     ],
   },
 ];

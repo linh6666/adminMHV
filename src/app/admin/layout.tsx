@@ -72,33 +72,37 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Navbar layout */}
       <AppShell.Navbar p="md">
         {/* Phần menu bên trên, có thể scroll */}
-        <AppShell.Section grow component={ScrollArea}>
-          {mockdata.map((item) =>
-            item.links ? (
-              <NavLink
-                key={item.label}
-                label={item.label}
-                leftSection={<item.icon size={18} />}
-                defaultOpened={item.initiallyOpened}
-              >
-                {item.links.map((link) => (
-                  <NavLink
-                    key={link.label}
-                    label={link.label}
-                    onClick={() => router.push(link.link)}
-                  />
-                ))}
-              </NavLink>
-            ) : (
-              <NavLink
-                key={item.label}
-                label={item.label}
-                leftSection={<item.icon size={18} />}
-                onClick={() => router.push(item.link!)}
-              />
-            )
-          )}
-        </AppShell.Section>
+       <AppShell.Section grow component={ScrollArea}>
+  {mockdata.map((item) =>
+    item.links ? (
+      <NavLink
+        key={item.label}
+        label={item.label}
+        leftSection={<item.icon size={18} />}
+        defaultOpened={item.initiallyOpened}
+        style={{  fontSize: '14px' }}
+      >
+        {item.links.map((link) => (
+          <NavLink
+            key={link.label}
+            label={link.label}
+            onClick={() => router.push(link.link)}
+            style={{  fontSize: '14px' }}
+          />
+        ))}
+      </NavLink>
+    ) : (
+      <NavLink
+        key={item.label}
+        label={item.label}
+        leftSection={<item.icon size={18} />}
+        onClick={() => router.push(item.link!)}
+        style={{  fontSize: '14px' }}
+      />
+    )
+  )}
+</AppShell.Section>
+
 
         {/* Phần logout nằm dưới cùng */}
         <AppShell.Section>
