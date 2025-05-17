@@ -1,0 +1,8 @@
+.root {
+         /* rộng hơn mặc định */
+  height: 100%;
+  /* cách top và căn giữa */
+  box-sizing: border-box;
+               /* thoáng hơn */
+  background-color: white;   /* nền trắng */
+}
