@@ -5,7 +5,7 @@ export default function Page() {
 
      <>
       <h1>Welcome to Admin Mô Hình Việt</h1>
-      <p>This is the homepage content.</p>
+   
     </>
   
   );

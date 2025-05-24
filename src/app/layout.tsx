@@ -1,8 +1,8 @@
-// src/app/layout.tsx
 import { MantineProvider } from '@mantine/core';
-import '@mantine/core/styles.css'; // đảm bảo đã import global styles
-import { Metadata } from "next"; // Chỉ import từ "next", không gắn "use client"
-import AppContainer from "../../common/AppContainer/AppContainer"; // Đường dẫn tùy theo cấu trúc dự án của bạn
+import { ModalsProvider } from '@mantine/modals';
+import '@mantine/core/styles.css';
+import { Metadata } from "next";
+import AppContainer from "../../common/AppContainer/AppContainer";
 import AdminLayout from '../app/admin/layout';
 
 export const metadata: Metadata = {
@@ -15,11 +15,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <MantineProvider withGlobalStyles withNormalizeCSS>
-          <AppContainer>
-            <AdminLayout>{children}</AdminLayout>
-          </AppContainer>
+          <ModalsProvider>
+            <AppContainer>
+              <AdminLayout>{children}</AdminLayout>
+            </AppContainer>
+          </ModalsProvider>
         </MantineProvider>
       </body>
     </html>
   );
 }
+
