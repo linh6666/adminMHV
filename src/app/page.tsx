@@ -1,12 +1,14 @@
-import React from 'react';
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 
-export default function Page() {
-  return (
+export default async function HomePage() {
+  const cookieStore = await cookies(); // 🔥 Bắt buộc phải có await ở đây!
+  const token = cookieStore.get('access_token'); // Bây giờ .get() không còn báo lỗi nữa
 
-     <>
-      <h1>Welcome to Admin Mô Hình Việt</h1>
-   
-    </>
-  
-  );
+  if (!token) {
+    redirect('/login');
+  } else {
+    redirect('/admin');
+  }
 }
+

@@ -1,9 +1,9 @@
+// app/layout.tsx
 import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import '@mantine/core/styles.css';
 import { Metadata } from "next";
 import AppContainer from "../../common/AppContainer/AppContainer";
-import AdminLayout from '../app/admin/layout';
 
 export const metadata: Metadata = {
   title: "Quản Trị MHV",
@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <MantineProvider withGlobalStyles withNormalizeCSS>
           <ModalsProvider>
             <AppContainer>
-              <AdminLayout>{children}</AdminLayout>
+              {children}
             </AppContainer>
           </ModalsProvider>
         </MantineProvider>

@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Table, Checkbox, Divider, Loader, Center } from '@mantine/core';
 import { modals } from '@mantine/modals';
-import { api } from '../../../library/axios'; // axios instance đã cấu hình
-import AppAction from '../common/AppAction';
-import { NotificationExtension } from '../extension/NotificationExtension';
+import { api } from '../../../../library/axios'; // axios instance đã cấu hình
+import AppAction from '../../common/AppAction';
+import { NotificationExtension } from '../../extension/NotificationExtension';
 import CreateView from './CreateView';
 import DeleteView from './DeleteView';
 import EditView from './EditView';
@@ -34,11 +34,9 @@ export default function UserList() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-     const res = await api.get<ApiResponse>('/api/v1/users/', {
-  params: { skip: 0, limit: 100 },
-
-});
-
+      const res = await api.get<ApiResponse>('/api/v1/users/', {
+        params: { skip: 0, limit: 100 },
+      });
 
       if (Array.isArray(res.data.data)) {
         setUsers(res.data.data);

@@ -6,13 +6,14 @@ const createApiInstance = (baseURL: string) => {
     baseURL,
     headers: {
       "Content-Type": "application/json;charset=utf-8",
+      
     },
   });
 
   // Thêm interceptor request để tự động gắn token Authorization
   api.interceptors.request.use(
     (config) => {
-      const token = localStorage.getItem("jwt");
+      const token = localStorage.getItem("access_token");
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }

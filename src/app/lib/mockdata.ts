@@ -30,7 +30,7 @@ export const mockdata: NavItem[] = [
      icon: IconUser, 
        initiallyOpened: true,
          links: [
-      { label: 'Quản lý người dùng và phân quyền ', link: '/Tai-khoan' },
+      { label: 'Quản lý người dùng và phân quyền ', link: '/admin/Tai-khoan' },
       
     ],
   
@@ -40,7 +40,7 @@ export const mockdata: NavItem[] = [
     icon: IconNotes,
     initiallyOpened: true,
     links: [
-      { label: 'Danh sách khách hàng', link: '/market/overview' },
+      { label: 'Danh sách khách hàng', link: '/admin/users' },
       { label: 'Danh sách nhóm khách hàng', link: '/market/forecasts' },
       { label: 'Tổng hợp trao đổi của người dùng', link: '/market/outlook' },
       { label: 'Tổng hợp đánh giá của người dùng', link: '/market/realtime' },
