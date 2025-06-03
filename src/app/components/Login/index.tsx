@@ -100,7 +100,7 @@ export function Login() {
           <Anchor component="button" type="button" c="dimmed" size="xs">
             Quên mật khẩu?
           </Anchor>
-          <Button type="submit" radius="sl">
+          <Button type="submit" radius="sl"     style={{ backgroundColor: "#406c88", color: "white" }}>
             Đăng Nhập
           </Button>
         </Group>

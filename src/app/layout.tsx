@@ -2,6 +2,7 @@
 import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import '@mantine/core/styles.css';
+
 import { Metadata } from "next";
 import AppContainer from "../../common/AppContainer/AppContainer";
 

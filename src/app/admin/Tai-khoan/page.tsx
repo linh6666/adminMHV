@@ -11,6 +11,8 @@ import DeleteView from './DeleteView';
 import EditView from './EditView';
 import { ActiveUser } from './ActiveUser';
 import { ActiveToken } from './ActivesToken';
+import AppSearch from '@/app/common/AppSearch';
+import { EuiSpacer } from '@elastic/eui';
 
 interface User {
   id: string;
@@ -169,6 +171,9 @@ export default function UserList() {
         openActiveAdmins={openModalActiveAdmins}
       />
       <Divider my="sm" />
+<AppSearch/>
+ <EuiSpacer size="l" />
+
       {loading ? (
         <Center my="xl">
           <Loader />
@@ -185,11 +190,11 @@ export default function UserList() {
                   aria-label="Select all users"
                 />
               </th>
-              <th>Họ tên</th>
-              <th>Email</th>
-              <th>Số điện thoại</th>
-              <th>Ngày tạo</th>
-              <th>Trạng thái</th>
+             <th style={{ fontSize: "12px" }}>Họ tên</th>
+<th style={{ fontSize: "12px" }}>Email</th>
+<th style={{ fontSize: "12px" }}>Số điện thoại</th>
+<th style={{ fontSize: "12px" }}>Ngày tạo</th>
+<th style={{ fontSize: "12px" }}>Trạng thái</th>
             </tr>
           </thead>
           <tbody>
