@@ -9,7 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@elastic/eui": "^102.1.0",
+    "@elastic/datemath": "^5.0.3",
+    "@elastic/eui": "^102.3.0",
     "@elastic/eui-theme-borealis": "^1.0.0",
     "@emotion/react": "^11.14.0",
     "@faker-js/faker": "^9.8.0",

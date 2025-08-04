@@ -133,7 +133,7 @@ const AppSearch = () => {
         <EuiFlexGroup alignItems="flexEnd">
           <EuiFlexItem grow>
             <EuiFieldSearch
-              placeholder="Tìm kiếm..."
+              placeholder="Nhập..."
               aria-label="An example of search with fullWidth"
             
             

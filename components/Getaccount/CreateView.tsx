@@ -9,85 +9,51 @@ import {
   PasswordInput,
   TextInput,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
-import { modals } from "@mantine/modals";
+import { isNotEmpty, matchesField, useForm } from "@mantine/form";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { useEffect } from "react";
-import { API_ROUTE } from "../../../../const/apiRouter";
-import { api } from "../../../../library/axios";
-import { CreateUserPayload } from "../../../../api/apicreateuser";
+import { modals } from "@mantine/modals";
+import { useDisclosure } from "@mantine/hooks";
+import { createUser } from "../../api/apicreateuser"; // 🔁 sửa đường dẫn nếu cần
 
-interface EditViewProps {
+interface CreateViewProps {
   onSearch: () => Promise<void>;
-  id: string;
 }
 
-const EditView = ({ onSearch, id }: EditViewProps) => {
+const CreateView = ({ onSearch }: CreateViewProps) => {
   const [visible, { open, close }] = useDisclosure(false);
 
-  const form = useForm<CreateUserPayload>({
+  const form = useForm({
     initialValues: {
       email: "",
       full_name: "",
-      phone: "",
       password: "",
       confirm_password: "",
       is_active: false,
       is_superuser: false,
+      phone: "", // ✅ thêm phone
     },
     validate: {
-      email: (value) => (value ? null : "Email không được để trống"),
-      full_name: (value) => (value ? null : "Họ và tên không được để trống"),
-      phone: (value) => (value ? null : "Số điện thoại không được để trống"),
-     
+      email: isNotEmpty("Email không được để trống"),
+      full_name: isNotEmpty("Họ và tên không được để trống"),
+      phone: isNotEmpty("Số điện thoại không được để trống"), // ✅ validate phone
+      password: isNotEmpty("Mật khẩu không được để trống"),
+      confirm_password: matchesField("password", "Mật khẩu không khớp"),
     },
   });
 
-  const handleSubmit = async (values: CreateUserPayload) => {
+  const handleSubmit = async (values: typeof form.values) => {
     open();
     try {
-      const url = API_ROUTE.EDIT_USERNAME.replace("{user_id}", id);
-      await api.
-patch(url, values);
+      await createUser(values); // ✅ values đã có phone
       await onSearch();
       modals.closeAll();
     } catch (error) {
-      console.error("Lỗi khi cập nhật user:", error);
-      alert("Đã xảy ra lỗi khi cập nhật người dùng.");
+      console.error("Lỗi khi tạo user:", error);
+      alert("Đã xảy ra lỗi khi tạo người dùng.");
     } finally {
       close();
     }
   };
-
-  const fetchUserDetail = async () => {
-    open();
-    try {
-      const url = API_ROUTE.EDIT_USERNAME.replace("{user_id}", id);
-      const response = await api.get(url);
-      const userData = response.data;
-
-      form.setValues({
-        email: userData.email || "",
-        full_name: userData.full_name || "",
-        phone: userData.phone || "",
-        password: "",
-        confirm_password: "",
-        is_active: userData.is_active ?? false,
-        is_superuser: userData.is_superuser ?? false,
-      });
-    } catch (error) {
-      console.error("Lỗi khi lấy dữ liệu user:", error);
-      alert("Không thể tải thông tin người dùng.");
-      modals.closeAll();
-    } finally {
-      close();
-    }
-  };
-
-  useEffect(() => {
-    if (id) fetchUserDetail();
-  }, [id]);
 
   return (
     <Box
@@ -123,7 +89,7 @@ patch(url, values);
         placeholder="Nhập số điện thoại"
         withAsterisk
         mt="md"
-        {...form.getInputProps("phone")}
+        {...form.getInputProps("phone")} // ✅ input cho phone
       />
 
       <PasswordInput
@@ -135,8 +101,8 @@ patch(url, values);
       />
 
       <PasswordInput
-        label="Xác nhận mật khẩu"
-        placeholder="Nhập lại mật khẩu"
+        label="Nhập lại mật khẩu"
+        placeholder="Xác nhận mật khẩu"
         withAsterisk
         mt="md"
         {...form.getInputProps("confirm_password")}
@@ -178,4 +144,6 @@ patch(url, values);
   );
 };
 
-export default EditView;
+export default CreateView;
+
+

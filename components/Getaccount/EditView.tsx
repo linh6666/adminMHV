@@ -14,9 +14,9 @@ import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useEffect } from "react";
-import { API_ROUTE } from "../../../../const/apiRouter";
-import { api } from "../../../../library/axios";
-import { CreateUserPayload } from "../../../../api/apicreateuser";
+import { API_ROUTE } from "../../const/apiRouter";
+import { api } from "../../library/axios";
+import { CreateUserPayload } from "../../api/apicreateuser";
 
 interface EditViewProps {
   onSearch: () => Promise<void>;
@@ -40,7 +40,9 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
       email: (value) => (value ? null : "Email không được để trống"),
       full_name: (value) => (value ? null : "Họ và tên không được để trống"),
       phone: (value) => (value ? null : "Số điện thoại không được để trống"),
-     
+      password: (value) => (value ? null : "Mật khẩu không được để trống"),
+      confirm_password: (value, values) =>
+        value === values.password ? null : "Mật khẩu không khớp",
     },
   });
 

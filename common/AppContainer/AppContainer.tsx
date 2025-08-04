@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import classes from "./AppContainer.module.css";
+import { EuiProvider } from '@elastic/eui';
 
 type AppContainerProps = {
   children?: ReactNode;

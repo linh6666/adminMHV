@@ -10,6 +10,7 @@ interface User {
 const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const getUser = async (token: string) => {
@@ -20,8 +21,11 @@ const useAuth = () => {
       setError(null);
     } catch (err) {
       console.error("Fetch user error:", err);
-      setError("Failed to fetch user data.");
+      setUser(null);
       setIsLoggedIn(false);
+      setError("Failed to fetch user data.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -29,17 +33,23 @@ const useAuth = () => {
     const token = localStorage.getItem("access_token");
     if (token) {
       getUser(token);
+    } else {
+      setLoading(false);
     }
   }, []);
 
   const login = async (username: string, password: string) => {
+    setLoading(true);
     try {
       const { access_token } = await loginUser(username, password);
       localStorage.setItem("access_token", access_token);
-      await getUser(access_token); // Gọi lại để lấy thông tin người dùng ngay
+      await getUser(access_token); // Gọi để lấy thông tin user ngay
     } catch (err) {
       console.error("Login error:", err);
+      setUser(null);
+      setIsLoggedIn(false);
       setError("Login failed.");
+      setLoading(false);
     }
   };
 
@@ -56,6 +66,7 @@ const useAuth = () => {
     login,
     logout,
     error,
+    loading,
   };
 };
 

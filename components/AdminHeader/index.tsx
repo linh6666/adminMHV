@@ -3,7 +3,7 @@
 import { AppShell, Burger, Button, Group, Image } from "@mantine/core";
 import Link from "next/link";
 import { IconUser } from "@tabler/icons-react";
-import useAuth  from "../../../../hook/useAuth"; // Đường dẫn thực tế đến hook useAuth
+import useAuth  from "../../hook/useAuth"; // Đường dẫn thực tế đến hook useAuth
 
 export default function AdminHeader({ opened, toggle }: { opened: boolean; toggle: () => void }) {
   const { user } = useAuth();
@@ -22,7 +22,8 @@ export default function AdminHeader({ opened, toggle }: { opened: boolean; toggl
           </Link>
         </Group>
 
-    {user?.full_name && (
+    <IconUser/>
+{user?.full_name && (
   <Button
     leftSection={<IconUser size={18} />}
     radius="md"

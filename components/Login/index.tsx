@@ -12,7 +12,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { loginUser } from "../../../../api/apilogin";
+import { loginUser } from "../../api/apilogin";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
@@ -98,8 +98,9 @@ export function Login() {
 
         <Group justify="space-between" mt="xl">
           <Anchor component="button" type="button" c="dimmed" size="xs">
-            Quên mật khẩu?
+        
           </Anchor>
+          <></>
           <Button type="submit" radius="sl"     style={{ backgroundColor: "#406c88", color: "white" }}>
             Đăng Nhập
           </Button>
@@ -108,3 +109,104 @@ export function Login() {
     </Paper>
   );
 }
+// 'use client';
+
+// import {
+//   Button,
+//   Divider,
+//   Group,
+//   Paper,
+//   PasswordInput,
+//   Stack,
+//   Text,
+//   TextInput,
+// } from '@mantine/core';
+// import { useForm } from '@mantine/form';
+// import { useRouter } from 'next/navigation';
+// import { useState } from 'react';
+
+// export default function LoginForm() {
+//   const router = useRouter();
+//   const [loading, setLoading] = useState(false);
+
+//   const form = useForm({
+//     initialValues: {
+//       username: '',
+//       password: '',
+//     },
+//     validate: {
+//       username: (val) => (/^\S+@\S+$/.test(val) ? null : 'Email không hợp lệ'),
+//       password: (val) => (val.length < 6 ? 'Mật khẩu phải có ít nhất 6 ký tự' : null),
+//     },
+//   });
+
+//   const handleSubmit = async (values: typeof form.values) => {
+//     setLoading(true);
+
+//     // 🔧 Giả lập xử lý đăng nhập trong 1 giây
+//     setTimeout(() => {
+//       setLoading(false);
+//       router.replace('/admin');
+//     }, 1000);
+//   };
+
+//   return (
+//     <Paper
+//       radius="md"
+//       p="lg"
+//       withBorder
+//       style={{
+//         width: '400px',
+//         position: 'absolute',
+//         top: '40%',
+//         left: '50%',
+//         transform: 'translate(-50%, -50%)',
+//       }}
+//     >
+//       <Text size="lg" fw={500} color="#294b61">
+//         Chào mừng bạn đến với Mô Hình Việt!
+//       </Text>
+
+//       <Divider label="Đăng Nhập" labelPosition="center" my="lg" />
+
+//       <form onSubmit={form.onSubmit(handleSubmit)}>
+//         <Stack>
+//           <TextInput
+//             required
+//             label="Email"
+//             placeholder="hello@gmail.com"
+//             value={form.values.username}
+//             onChange={(event) =>
+//               form.setFieldValue('username', event.currentTarget.value)
+//             }
+//             error={form.errors.username}
+//             radius="md"
+//           />
+
+//           <PasswordInput
+//             required
+//             label="Mật khẩu"
+//             placeholder="********"
+//             value={form.values.password}
+//             onChange={(event) =>
+//               form.setFieldValue('password', event.currentTarget.value)
+//             }
+//             error={form.errors.password}
+//             radius="md"
+//           />
+//         </Stack>
+
+//         <Group justify="space-between" mt="xl">
+//           <Button
+//             type="submit"
+//             loading={loading}
+//             radius="sl"
+//             style={{ backgroundColor: '#406c88', color: 'white' }}
+//           >
+//             Đăng Nhập
+//           </Button>
+//         </Group>
+//       </form>
+//     </Paper>
+//   );
+// }

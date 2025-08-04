@@ -2,7 +2,7 @@ import { api } from '../library/axios';
 import { API_ROUTE } from '../const/apiRouter';
 
 export const getListRoles = async (token: string) => {
-  const response = await api.get(API_ROUTE.GET_LIST_USE, {
+  const response = await api.get(API_ROUTE.GET_LIST_SYSTEM, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

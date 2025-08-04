@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { AppShell, Divider, NavLink, ScrollArea } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import { IconLogout } from '@tabler/icons-react';
-import { mockdata } from '../../lib/mockdata';
+import { mockdata } from '../../src/app/lib/mockdata';
 
 export default function AdminNavbar({ onLogout }: { onLogout: () => void }) {
   const router = useRouter();

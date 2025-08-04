@@ -1,7 +1,12 @@
-// app/layout.tsx
+
+
 import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
+import { Notifications } from '@mantine/notifications';
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css'; // cần thiết để hiển thị style cho toast
+
+import "./globals.css";
 
 import { Metadata } from "next";
 import AppContainer from "../../common/AppContainer/AppContainer";
@@ -17,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <MantineProvider withGlobalStyles withNormalizeCSS>
           <ModalsProvider>
+            <Notifications position="top-right" />
             <AppContainer>
               {children}
             </AppContainer>

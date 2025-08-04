@@ -24,3 +24,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Ẩn ký tự ↵ trong EUI table */
+.euiScreenReaderOnly[data-tabular-copy-marker="tab"] {
+  display: none !important;
+}
+.euiScreenReaderOnly[aria-hidden="true"] {
+  display: none !important;
+}
