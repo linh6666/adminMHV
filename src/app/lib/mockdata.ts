@@ -27,15 +27,16 @@ export type NavItem = {
 // Dữ liệu sidebar
 export const mockdata: NavItem[] = [
  
-  { // { label: 'Quản lý tài khoản',
-  //    icon: IconUser, 
-  //      initiallyOpened: true,
-  //        links: [
-  //     { label: 'Quản lý người dùng và phân quyền ', link: '/admin/Tai-khoan' },
+  { label: 'Quản lý tài khoản',
+     icon: IconUser, 
+      initiallyOpened: true,
+        links: [
+    { label: 'Quản lý người dùng và phân quyền ', link: '/admin/Tai-khoan' },
       
-  //   ],
+    ],
   
-  //   },
+     },
+  {
     label: 'Quản lý khách hàng',
     icon: IconNotes,
     initiallyOpened: true,

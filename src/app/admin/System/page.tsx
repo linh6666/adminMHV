@@ -1,19 +1,26 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import {
   EuiBasicTable,
   EuiBasicTableColumn,
-  EuiTableFieldDataColumnType,
   EuiHealth,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiButtonIcon,
+  Criteria,
 } from '@elastic/eui';
-import { getListRoles } from '../../../../api/apigetlistsystym';
 import { Divider } from '@mantine/core';
+import { modals } from '@mantine/modals';
+
+import { getListRoles } from '../../../../api/apigetlistsystym';
 import CreateView from './CreateView';
 import DeleteView from './DeleteView';
 import EditView from './EditView';
 import AppAction from '../../common/AppAction';
-import { modals } from '@mantine/modals';
+import AppSearch from '@/app/common/AppSearch';
 import { NotificationExtension } from '../../extension/NotificationExtension';
+import { paginationBase, PaginationOptions } from '../../_base/model/BaseTable';
 
 type Role = {
   id: string;
@@ -25,7 +32,8 @@ const RoleTable = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedItems, setSelectedItems] = useState<Role[]>([]);
+  const [pagination, setPagination] = useState<PaginationOptions>(paginationBase);
 
   const fetchRoles = async () => {
     setLoading(true);
@@ -39,9 +47,22 @@ const RoleTable = () => {
     }
 
     try {
-      const data = await getListRoles(token);
-      console.log('📦 Dữ liệu vai trò trả về:', data);
+      const skip = pagination.pageIndex * pagination.pageSize;
+      const limit = pagination.pageSize;
+
+      const res = await getListRoles({
+        token,
+        skip,
+        limit,
+      });
+
+      const { data, total } = res;
+
       setRoles(data || []);
+      setPagination((prev) => ({
+        ...prev,
+        totalItemCount: total ?? data.length ?? 0,
+      }));
     } catch (err: any) {
       console.error('❌ Lỗi gọi API:', err);
       setError(err.message || 'Đã xảy ra lỗi khi tải dữ liệu.');
@@ -52,7 +73,7 @@ const RoleTable = () => {
 
   useEffect(() => {
     fetchRoles();
-  }, []);
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   const columns: Array<EuiBasicTableColumn<Role>> = [
     {
@@ -64,7 +85,7 @@ const RoleTable = () => {
     {
       field: 'description',
       name: 'Tên vai trò',
-      width: '20%',
+      width: '30%',
       'data-test-subj': 'descriptionCell',
       mobileOptions: {
         show: true,
@@ -75,16 +96,39 @@ const RoleTable = () => {
     {
       field: 'rank_total',
       name: 'Cấp bậc',
-      render: (rank: number) => (
-        <EuiHealth color="success">{rank}</EuiHealth>
-      ),
+      width: '20%',
+      render: (rank: number) => <EuiHealth color="success">{rank}</EuiHealth>,
       truncateText: true,
+    },
+    {
+      name: 'Thao tác',
+      width: '20%',
+      render: (role: Role) => (
+        <EuiFlexGroup gutterSize="s" wrap={false} alignItems="center">
+          <EuiFlexItem grow={false}>
+            <EuiButtonIcon
+              iconType="documentEdit"
+              aria-label="Edit"
+              color="success"
+              onClick={() => openEditUserModal(role)}
+            />
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>
+            <EuiButtonIcon
+              iconType="trash"
+              aria-label="Delete"
+              color="danger"
+              onClick={() => openDeleteUserModal(role)}
+            />
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      ),
     },
   ];
 
   const openModal = () => {
     modals.openConfirmModal({
-      title: <div style={{ fontWeight: 600, fontSize: 18 }}>Thêm mới tài khoản</div>,
+      title: <div style={{ fontWeight: 600, fontSize: 18 }}>Thêm vai trò mới</div>,
       children: <CreateView onSearch={fetchRoles} />,
       size: 'lg',
       radius: 'md',
@@ -94,51 +138,59 @@ const RoleTable = () => {
   };
 
   const openModalEdit = () => {
-    if (selectedIds.length !== 1) {
-      NotificationExtension.Warn('Vui lòng chọn 1 người dùng để chỉnh sửa');
+    if (selectedItems.length !== 1) {
+      NotificationExtension.Warn('Vui lòng chọn 1 vai trò để chỉnh sửa');
       return;
     }
-
-    const user = roles.find((u) => u.id === selectedIds[0]);
-    if (!user) return;
-
-    openEditUserModal(user);
+    openEditUserModal(selectedItems[0]);
   };
 
   const openModalDelete = () => {
-    if (selectedIds.length < 1) {
-      NotificationExtension.Warn('Vui lòng chọn ít nhất 1 người dùng để xóa');
+    if (selectedItems.length < 1) {
+      NotificationExtension.Warn('Vui lòng chọn ít nhất 1 vai trò để xóa');
       return;
     }
 
+    const ids = selectedItems.map((role) => role.id);
     modals.openConfirmModal({
-      title: <div style={{ fontWeight: 600, fontSize: 18 }}>Xóa người dùng</div>,
-      children: <DeleteView idItem={selectedIds} onSearch={fetchRoles} />,
+      title: <div style={{ fontWeight: 600, fontSize: 18 }}>Xóa vai trò</div>,
+      children: <DeleteView idItem={ids} onSearch={fetchRoles} />,
       confirmProps: { display: 'none' },
       cancelProps: { display: 'none' },
     });
   };
 
-  const openEditUserModal = (user: Role) => {
+  const openEditUserModal = (role: Role) => {
     modals.openConfirmModal({
-      title: (
-        <div style={{ fontWeight: 600, fontSize: 18 }}>
-          Chỉnh sửa tài khoản: {user.description}
-        </div>
-      ),
-      children: <EditView id={user.id} onSearch={fetchRoles} />,
+      title: <div style={{ fontWeight: 600, fontSize: 18 }}>Chỉnh sửa vai trò: {role.description}</div>,
+      children: <EditView id={role.id} onSearch={fetchRoles} />,
       confirmProps: { display: 'none' },
       cancelProps: { display: 'none' },
     });
   };
 
-  const openDeleteUserModal = (user: Role) => {
+  const openDeleteUserModal = (role: Role) => {
     modals.openConfirmModal({
-      title: <div style={{ fontWeight: 600, fontSize: 18 }}>Xóa người dùng</div>,
-      children: <DeleteView idItem={[user.id]} onSearch={fetchRoles} />,
+      title: <div style={{ fontWeight: 600, fontSize: 18 }}>Xóa vai trò</div>,
+      children: <DeleteView idItem={[role.id]} onSearch={fetchRoles} />,
       confirmProps: { display: 'none' },
       cancelProps: { display: 'none' },
     });
+  };
+
+  const selection = {
+    selectable: () => true,
+    onSelectionChange: (items: Role[]) => setSelectedItems(items),
+  };
+
+  const onTableChange = ({ page }: Criteria<Role>) => {
+    if (page) { // Kiểm tra xem page có tồn tại không
+      setPagination((prev) => ({
+        ...prev,
+        pageIndex: page.index ?? 0,
+        pageSize: page.size ?? 50,
+      }));
+    }
   };
 
   return (
@@ -148,14 +200,20 @@ const RoleTable = () => {
         openModalDelete={openModalDelete}
         openModalEdit={openModalEdit}
       />
-      <Divider my="sm" label="Danh sách người dùng" labelPosition="center" />
+
+      <Divider my="sm" label="Danh sách vai trò" labelPosition="center" />
+      <AppSearch />
+      <Divider my="sm" />
+
       <EuiBasicTable
         tableCaption="Danh sách vai trò hệ thống"
         responsiveBreakpoint={false}
         items={roles}
-        rowHeader="description"
         columns={columns}
         loading={loading}
+        itemId="id"
+        selection={selection}
+        rowHeader="description"
         noItemsMessage={
           error
             ? error
@@ -163,10 +221,21 @@ const RoleTable = () => {
             ? 'Đang tải dữ liệu...'
             : 'Không có vai trò nào.'
         }
+        pagination={{
+          pageIndex: pagination.pageIndex,
+          pageSize: pagination.pageSize,
+          totalItemCount: pagination.totalItemCount ?? 0,
+          pageSizeOptions: pagination.pageSizeOptions ?? [10, 20, 50, 150, 200],
+        }}
+        onChange={onTableChange}
       />
     </>
   );
 };
 
 export default RoleTable;
+
+
+
+
 

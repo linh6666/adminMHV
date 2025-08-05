@@ -3,20 +3,18 @@
 import {
   Box,
   Button,
-  Checkbox,
   Group,
   LoadingOverlay,
-  PasswordInput,
   TextInput,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { useForm, isNotEmpty } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useEffect } from "react";
 import { API_ROUTE } from "../../../../const/apiRouter";
 import { api } from "../../../../library/axios";
-import { CreateUserPayload } from "../../../../api/apicreateuser";
+import { CreateUserPayload } from "../../../../api/apicreatesystem";
 
 interface EditViewProps {
   onSearch: () => Promise<void>;
@@ -28,28 +26,20 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
 
   const form = useForm<CreateUserPayload>({
     initialValues: {
-      email: "",
-      full_name: "",
-      phone: "",
-      password: "",
-      confirm_password: "",
-      is_active: false,
-      is_superuser: false,
+      rank_total: 0,
+      description: '',
     },
     validate: {
-      email: (value) => (value ? null : "Email không được để trống"),
-      full_name: (value) => (value ? null : "Họ và tên không được để trống"),
-      phone: (value) => (value ? null : "Số điện thoại không được để trống"),
-     
+      rank_total: isNotEmpty("Cấp bậc không được để trống"),
+      description: isNotEmpty("Tên vai trò không được để trống"),
     },
   });
 
   const handleSubmit = async (values: CreateUserPayload) => {
     open();
     try {
-      const url = API_ROUTE.EDIT_USERNAME.replace("{user_id}", id);
-      await api.
-patch(url, values);
+      const url = API_ROUTE.EDIT_SYSTEM.replace("{user_id}", id);
+      await api.put(url, values);
       await onSearch();
       modals.closeAll();
     } catch (error) {
@@ -63,18 +53,13 @@ patch(url, values);
   const fetchUserDetail = async () => {
     open();
     try {
-      const url = API_ROUTE.EDIT_USERNAME.replace("{user_id}", id);
+      const url = API_ROUTE.EDIT_SYSTEM.replace("{user_id}", id);
       const response = await api.get(url);
       const userData = response.data;
 
       form.setValues({
-        email: userData.email || "",
-        full_name: userData.full_name || "",
-        phone: userData.phone || "",
-        password: "",
-        confirm_password: "",
-        is_active: userData.is_active ?? false,
-        is_superuser: userData.is_superuser ?? false,
+        rank_total: userData.rank_total ?? 0,
+        description: userData.description || "",
       });
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu user:", error);
@@ -103,55 +88,20 @@ patch(url, values);
       />
 
       <TextInput
-        label="Email"
-        placeholder="Nhập email"
+        label="Cấp bậc"
+        placeholder="Nhập cấp bậc"
         withAsterisk
         mt="md"
-        {...form.getInputProps("email")}
+        type="number"
+        {...form.getInputProps("rank_total")}
       />
 
       <TextInput
-        label="Họ và tên"
-        placeholder="Nhập họ và tên"
+        label="Tên vai trò"
+        placeholder="Nhập tên vai trò"
         withAsterisk
         mt="md"
-        {...form.getInputProps("full_name")}
-      />
-
-      <TextInput
-        label="Số điện thoại"
-        placeholder="Nhập số điện thoại"
-        withAsterisk
-        mt="md"
-        {...form.getInputProps("phone")}
-      />
-
-      <PasswordInput
-        label="Mật khẩu"
-        placeholder="Nhập mật khẩu"
-        withAsterisk
-        mt="md"
-        {...form.getInputProps("password")}
-      />
-
-      <PasswordInput
-        label="Xác nhận mật khẩu"
-        placeholder="Nhập lại mật khẩu"
-        withAsterisk
-        mt="md"
-        {...form.getInputProps("confirm_password")}
-      />
-
-      <Checkbox
-        label="Hoạt động"
-        mt="md"
-        {...form.getInputProps("is_active", { type: "checkbox" })}
-      />
-
-      <Checkbox
-        label="Là quản trị viên"
-        mt="xs"
-        {...form.getInputProps("is_superuser", { type: "checkbox" })}
+        {...form.getInputProps("description")}
       />
 
       <Group justify="flex-end" mt="lg">
@@ -179,3 +129,4 @@ patch(url, values);
 };
 
 export default EditView;
+

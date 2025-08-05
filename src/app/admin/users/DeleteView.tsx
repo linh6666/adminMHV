@@ -2,7 +2,7 @@ import { Button, Group, Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { deleteUserManagement } from "../../api/apideteleuse";
+import { deleteUserManagement } from "../../../../api/apidetelerole";
 
 type DeleteProductProps = {
   idItem: string[]; // UUID dưới dạng chuỗi

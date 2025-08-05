@@ -1,11 +1,30 @@
+
 import { api } from '../library/axios';
 import { API_ROUTE } from '../const/apiRouter';
 
-export const getListRoles = async (token: string) => {
+interface GetListRolesParams {
+  token: string;
+  skip?: number;
+  limit?: number;
+}
+
+export const getListRoles = async ({
+  token,
+  skip,
+  limit,
+}: GetListRolesParams) => {
   const response = await api.get(API_ROUTE.GET_LIST_USE, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    params: {
+      skip,
+      limit,
+    },
   });
-  return response.data.data; // chỉ trả về mảng
+
+  return {
+    data: response.data.data,
+    total: response.data.count, // Sửa từ `total` thành `count`
+  };
 };

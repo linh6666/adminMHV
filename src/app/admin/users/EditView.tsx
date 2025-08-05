@@ -6,6 +6,7 @@ import {
   Checkbox,
   Group,
   LoadingOverlay,
+  NumberInput,
   PasswordInput,
   TextInput,
 } from "@mantine/core";
@@ -14,9 +15,9 @@ import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useEffect } from "react";
-import { API_ROUTE } from "../../const/apiRouter";
-import { api } from "../../library/axios";
-import { CreateUserPayload } from "../../api/apicreateuser";
+import { API_ROUTE } from "../../../../const/apiRouter";
+import { api } from "../../../../library/axios";
+import { CreateUserPayload } from "../../../../api/apicreaterole";
 
 interface EditViewProps {
   onSearch: () => Promise<void>;
@@ -28,30 +29,25 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
 
   const form = useForm<CreateUserPayload>({
     initialValues: {
-      email: "",
-      full_name: "",
-      phone: "",
-      password: "",
-      confirm_password: "",
-      is_active: false,
-      is_superuser: false,
+      name: "",
+      rank: 0,
+      description: "",
+     
     },
     validate: {
-      email: (value) => (value ? null : "Email không được để trống"),
-      full_name: (value) => (value ? null : "Họ và tên không được để trống"),
-      phone: (value) => (value ? null : "Số điện thoại không được để trống"),
-      password: (value) => (value ? null : "Mật khẩu không được để trống"),
-      confirm_password: (value, values) =>
-        value === values.password ? null : "Mật khẩu không khớp",
+      name: (value) => (value ? null : "Email không được để trống"),
+      rank: (value) => (value ? null : "Họ và tên không được để trống"),
+      description: (value) => (value ? null : "Số điện thoại không được để trống"),
+     
     },
   });
 
   const handleSubmit = async (values: CreateUserPayload) => {
     open();
     try {
-      const url = API_ROUTE.EDIT_USERNAME.replace("{user_id}", id);
+      const url = API_ROUTE.EDIT_ROLES.replace("{user_id}", id);
       await api.
-patch(url, values);
+put(url, values);
       await onSearch();
       modals.closeAll();
     } catch (error) {
@@ -65,18 +61,15 @@ patch(url, values);
   const fetchUserDetail = async () => {
     open();
     try {
-      const url = API_ROUTE.EDIT_USERNAME.replace("{user_id}", id);
+      const url = API_ROUTE.EDIT_ROLES.replace("{user_id}", id);
       const response = await api.get(url);
       const userData = response.data;
 
       form.setValues({
-        email: userData.email || "",
-        full_name: userData.full_name || "",
-        phone: userData.phone || "",
-        password: "",
-        confirm_password: "",
-        is_active: userData.is_active ?? false,
-        is_superuser: userData.is_superuser ?? false,
+        name: userData.name || "",
+        rank: userData.rank|| "",
+        description: userData.description || "",
+      
       });
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu user:", error);
@@ -105,56 +98,30 @@ patch(url, values);
       />
 
       <TextInput
-        label="Email"
-        placeholder="Nhập email"
+        label="Tên quyền"
+        placeholder="Nhập tên quyên"
         withAsterisk
         mt="md"
-        {...form.getInputProps("email")}
+        {...form.getInputProps("name")}
+      />
+
+      <NumberInput
+        label="Cấp bậc "
+        placeholder="Nhập cấp bậc "
+        withAsterisk
+        mt="md"
+        {...form.getInputProps("rank")}
       />
 
       <TextInput
-        label="Họ và tên"
-        placeholder="Nhập họ và tên"
+        label="Mô tả"
+        placeholder="Nhập mmo tả"
         withAsterisk
         mt="md"
-        {...form.getInputProps("full_name")}
+        {...form.getInputProps("description")}
       />
 
-      <TextInput
-        label="Số điện thoại"
-        placeholder="Nhập số điện thoại"
-        withAsterisk
-        mt="md"
-        {...form.getInputProps("phone")}
-      />
-
-      <PasswordInput
-        label="Mật khẩu"
-        placeholder="Nhập mật khẩu"
-        withAsterisk
-        mt="md"
-        {...form.getInputProps("password")}
-      />
-
-      <PasswordInput
-        label="Xác nhận mật khẩu"
-        placeholder="Nhập lại mật khẩu"
-        withAsterisk
-        mt="md"
-        {...form.getInputProps("confirm_password")}
-      />
-
-      <Checkbox
-        label="Hoạt động"
-        mt="md"
-        {...form.getInputProps("is_active", { type: "checkbox" })}
-      />
-
-      <Checkbox
-        label="Là quản trị viên"
-        mt="xs"
-        {...form.getInputProps("is_superuser", { type: "checkbox" })}
-      />
+     
 
       <Group justify="flex-end" mt="lg">
         <Button

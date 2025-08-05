@@ -9,9 +9,10 @@ export interface PaginationOptions {
   totalItemCount?: number;
 }
 
-export const paginationBase: Pagination = {
-  pageSizeOptions: [20, 50, 150, 200],
+export const paginationBase: PaginationOptions = {
+  pageSizeOptions: [10, 20, 50, 150, 200], // ← Thêm 10 ở đây
   pageIndex: 0,
-  pageSize: 50,
+  pageSize: 20,
   totalItemCount: 0,
 };
+

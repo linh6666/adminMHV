@@ -1,19 +1,18 @@
-"use client";
+'use client';
 
 import {
   Box,
   Button,
-  Checkbox,
   Group,
   LoadingOverlay,
-  PasswordInput,
+  NumberInput,
   TextInput,
-} from "@mantine/core";
-import { isNotEmpty, matchesField, useForm } from "@mantine/form";
-import { IconCheck, IconX } from "@tabler/icons-react";
-import { modals } from "@mantine/modals";
-import { useDisclosure } from "@mantine/hooks";
-import { createUser } from "../../../../api/apicreatesystem"; // 🔁 sửa đường dẫn nếu cần
+} from '@mantine/core';
+import { isNotEmpty, useForm } from '@mantine/form';
+import { IconCheck, IconX } from '@tabler/icons-react';
+import { modals } from '@mantine/modals';
+import { useDisclosure } from '@mantine/hooks';
+import { createUser } from '../../../../api/apicreaterole';
 
 interface CreateViewProps {
   onSearch: () => Promise<void>;
@@ -22,25 +21,29 @@ interface CreateViewProps {
 const CreateView = ({ onSearch }: CreateViewProps) => {
   const [visible, { open, close }] = useDisclosure(false);
 
-const form = useForm({
-  initialValues: {
-    rank_total: 0,
-    description: '',
-  },
-  validate: {
-    rank_total: isNotEmpty("Email không được để trống"),
-    description: isNotEmpty("Họ và tên không được để trống"),
-  },
-});
+  const form = useForm({
+    initialValues: {
+      name: '',
+      rank: 0,
+      description: '',
+    },
+    validate: {
+      name: isNotEmpty('Tên không được để trống'),
+      rank: (value) =>
+        value === undefined || value === null ? 'Cấp bậc không được để trống' : null,
+      description: isNotEmpty('Mô tả không được để trống'),
+    },
+  });
+
   const handleSubmit = async (values: typeof form.values) => {
     open();
     try {
-      await createUser(values); // ✅ values đã có phone
+      await createUser(values); // values: { name, rank, description }
       await onSearch();
       modals.closeAll();
     } catch (error) {
-      console.error("Lỗi khi tạo user:", error);
-      alert("Đã xảy ra lỗi khi tạo người dùng.");
+      console.error('Lỗi khi tạo user:', error);
+      alert('Đã xảy ra lỗi khi tạo người dùng.');
     } finally {
       close();
     }
@@ -56,30 +59,32 @@ const form = useForm({
       <LoadingOverlay
         visible={visible}
         zIndex={1000}
-        overlayProps={{ radius: "sm", blur: 2 }}
+        overlayProps={{ radius: 'sm', blur: 2 }}
       />
 
       <TextInput
+        label="Tên quyền "
+        placeholder="Nhập tên quyền"
+        withAsterisk
+        mt="md"
+        {...form.getInputProps('name')}
+      />
+
+      <NumberInput
         label="Cấp bậc"
         placeholder="Nhập cấp bậc"
         withAsterisk
         mt="md"
-        {...form.getInputProps("rank_total")}
+        {...form.getInputProps('rank')}
       />
 
       <TextInput
-        label="Tên vai trò"
-        placeholder="Nhập tên vai trò"
+        label="Mô tả"
+        placeholder="Nhập mô tả"
         withAsterisk
         mt="md"
-        {...form.getInputProps("description")}
+        {...form.getInputProps('description')}
       />
-
-  
-
-  
-
-    
 
       <Group justify="flex-end" mt="lg">
         <Button
@@ -106,5 +111,7 @@ const form = useForm({
 };
 
 export default CreateView;
+
+
 
 
