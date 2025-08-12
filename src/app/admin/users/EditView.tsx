@@ -3,18 +3,16 @@
 import {
   Box,
   Button,
-  Checkbox,
   Group,
   LoadingOverlay,
   NumberInput,
-  PasswordInput,
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { API_ROUTE } from "../../../../const/apiRouter";
 import { api } from "../../../../library/axios";
 import { CreateUserPayload } from "../../../../api/apicreaterole";
@@ -32,33 +30,33 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
       name: "",
       rank: 0,
       description: "",
-     
     },
     validate: {
-      name: (value) => (value ? null : "Email không được để trống"),
-      rank: (value) => (value ? null : "Họ và tên không được để trống"),
-      description: (value) => (value ? null : "Số điện thoại không được để trống"),
-     
+      name: (value) => (value ? null : "Tên quyền không được để trống"),
+      rank: (value) => (value !== null && value !== undefined ? null : "Cấp bậc không được để trống"),
+      description: (value) => (value ? null : "Mô tả không được để trống"),
     },
   });
 
+  /** Submit cập nhật role */
   const handleSubmit = async (values: CreateUserPayload) => {
     open();
     try {
       const url = API_ROUTE.EDIT_ROLES.replace("{user_id}", id);
-      await api.
-put(url, values);
+      await api.put(url, values);
       await onSearch();
       modals.closeAll();
     } catch (error) {
-      console.error("Lỗi khi cập nhật user:", error);
-      alert("Đã xảy ra lỗi khi cập nhật người dùng.");
+      console.error("Lỗi khi cập nhật quyền:", error);
+      alert("Đã xảy ra lỗi khi cập nhật quyền.");
     } finally {
       close();
     }
   };
 
-  const fetchUserDetail = async () => {
+  /** Lấy dữ liệu chi tiết role */
+  const fetchUserDetail = useCallback(async () => {
+    if (!id) return;
     open();
     try {
       const url = API_ROUTE.EDIT_ROLES.replace("{user_id}", id);
@@ -67,22 +65,22 @@ put(url, values);
 
       form.setValues({
         name: userData.name || "",
-        rank: userData.rank|| "",
+        rank: userData.rank ?? 0,
         description: userData.description || "",
-      
       });
     } catch (error) {
-      console.error("Lỗi khi lấy dữ liệu user:", error);
-      alert("Không thể tải thông tin người dùng.");
+      console.error("Lỗi khi lấy dữ liệu quyền:", error);
+      alert("Không thể tải thông tin quyền.");
       modals.closeAll();
     } finally {
       close();
     }
-  };
+  }, [id, open, close]); // Không đưa form vào dependency
 
+  /** Chỉ gọi khi id thay đổi */
   useEffect(() => {
-    if (id) fetchUserDetail();
-  }, [id]);
+    fetchUserDetail();
+  }, [fetchUserDetail]);
 
   return (
     <Box
@@ -99,15 +97,15 @@ put(url, values);
 
       <TextInput
         label="Tên quyền"
-        placeholder="Nhập tên quyên"
+        placeholder="Nhập tên quyền"
         withAsterisk
         mt="md"
         {...form.getInputProps("name")}
       />
 
       <NumberInput
-        label="Cấp bậc "
-        placeholder="Nhập cấp bậc "
+        label="Cấp bậc"
+        placeholder="Nhập cấp bậc"
         withAsterisk
         mt="md"
         {...form.getInputProps("rank")}
@@ -115,13 +113,11 @@ put(url, values);
 
       <TextInput
         label="Mô tả"
-        placeholder="Nhập mmo tả"
+        placeholder="Nhập mô tả"
         withAsterisk
         mt="md"
         {...form.getInputProps("description")}
       />
-
-     
 
       <Group justify="flex-end" mt="lg">
         <Button

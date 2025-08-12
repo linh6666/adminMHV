@@ -243,7 +243,7 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   EuiBasicTable,
   EuiBasicTableColumn,
@@ -267,9 +267,9 @@ import { paginationBase, PaginationOptions } from '../../_base/model/BaseTable';
 
 type Role = {
   id: string;
- name: string;
- description?: string;
- rank:number;
+  name: string;
+  description?: string;
+  rank: number;
 };
 
 const RoleTable = () => {
@@ -279,7 +279,7 @@ const RoleTable = () => {
   const [selectedItems, setSelectedItems] = useState<Role[]>([]);
   const [pagination, setPagination] = useState<PaginationOptions>(paginationBase);
 
-  const fetchRoles = async () => {
+  const fetchRoles = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -307,71 +307,75 @@ const RoleTable = () => {
         ...prev,
         totalItemCount: total ?? data.length ?? 0,
       }));
-    } catch (err: any) {
-      console.error('❌ Lỗi gọi API:', err);
-      setError(err.message || 'Đã xảy ra lỗi khi tải dữ liệu.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error('❌ Lỗi gọi API:', err);
+        setError(err.message);
+      } else {
+        console.error('❌ Lỗi không xác định:', err);
+        setError('Đã xảy ra lỗi khi tải dữ liệu.');
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
     fetchRoles();
-  }, [pagination.pageIndex, pagination.pageSize]);
+  }, [fetchRoles]);
 
-   const columns: Array<EuiBasicTableColumn<Role>> = [
+  const columns: Array<EuiBasicTableColumn<Role>> = [
     {
       field: 'id',
       name: 'ID',
       truncateText: true,
-     width: '40%',
-   },
-      {
+      width: '40%',
+    },
+    {
       field: 'name',
       name: 'Tên quyền',
       truncateText: true,
       width: '30%',
     },
-        {
-         field: 'rank',
-          name: 'Cấp bậc',
-          width: '20%',
-          render: (rank: number) => <EuiHealth color="success">{rank}</EuiHealth>,
-         truncateText: true,
-        },
-         {
+    {
+      field: 'rank',
+      name: 'Cấp bậc',
+      width: '20%',
+      render: (rank: number) => <EuiHealth color="success">{rank}</EuiHealth>,
+      truncateText: true,
+    },
+    {
       field: 'description',
       name: 'Mô tả',
       truncateText: true,
       width: '30%',
     },
- 
     {
       name: 'Actions',
       width: '25%',
       render: (role: Role) => {
-       return (
-         <EuiFlexGroup wrap={false} gutterSize="s" alignItems="center">
+        return (
+          <EuiFlexGroup wrap={false} gutterSize="s" alignItems="center">
             <EuiFlexItem grow={false}>
-               <EuiButtonIcon
-                 iconType="documentEdit"
+              <EuiButtonIcon
+                iconType="documentEdit"
                 aria-label="Edit"
                 color="success"
-                 onClick={() => openEditUserModal(role)}
-               />
+                onClick={() => openEditUserModal(role)}
+              />
             </EuiFlexItem>
-             <EuiFlexItem grow={false}>
+            <EuiFlexItem grow={false}>
               <EuiButtonIcon
-                 iconType="trash"
-                 aria-label="Delete"
-                 color="danger"
+                iconType="trash"
+                aria-label="Delete"
+                color="danger"
                 onClick={() => openDeleteUserModal(role)}
               />
-           </EuiFlexItem>
-           </EuiFlexGroup>
+            </EuiFlexItem>
+          </EuiFlexGroup>
         );
-       },
-  },
+      },
+    },
   ];
 
   const openModal = () => {
@@ -410,7 +414,11 @@ const RoleTable = () => {
 
   const openEditUserModal = (role: Role) => {
     modals.openConfirmModal({
-      title: <div style={{ fontWeight: 600, fontSize: 18 }}>Chỉnh sửa vai trò: {role.description}</div>,
+      title: (
+        <div style={{ fontWeight: 600, fontSize: 18 }}>
+          Chỉnh sửa vai trò: {role.description}
+        </div>
+      ),
       children: <EditView id={role.id} onSearch={fetchRoles} />,
       confirmProps: { display: 'none' },
       cancelProps: { display: 'none' },
@@ -432,7 +440,7 @@ const RoleTable = () => {
   };
 
   const onTableChange = ({ page }: Criteria<Role>) => {
-    if (page) { // Kiểm tra xem page có tồn tại không
+    if (page) {
       setPagination((prev) => ({
         ...prev,
         pageIndex: page.index ?? 0,

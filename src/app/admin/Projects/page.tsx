@@ -13,7 +13,7 @@ import {
 import { Badge, Divider } from '@mantine/core';
 import { modals } from '@mantine/modals';
 
-import { getListRoles } from '../../../../api/apigetlistuse';
+import { getListRoles } from '../../../../api/apigetlistproject2';
 import CreateView from './CreateView';
 import DeleteView from './DeleteView';
 import EditView from './EditView';
@@ -21,16 +21,17 @@ import AppAction from '../../common/AppAction';
 import AppSearch from '@/app/common/AppSearch';
 import { NotificationExtension } from '../../extension/NotificationExtension';
 import { paginationBase, PaginationOptions } from '../../_base/model/BaseTable';
-
 type Role = {
+  picture: string;
   id: string;
-  email: string;
-  full_name: string | null;
-  phone: string | null;
-  is_active: boolean;
-  is_superuser: boolean;
-  system_rank: number | null;
+  name: string;
+  type: string;
+  address: string;
+  investor: string;
+  image_url: string;
+  rank: number;
 };
+
 
 const RoleTable = () => {
   const [roles, setRoles] = useState<Role[]>([]);
@@ -87,47 +88,55 @@ const RoleTable = () => {
       field: 'id',
       name: 'ID',
       truncateText: true,
-      width: '40%',
+      width: '20%',
     },
     {
-      field: 'full_name',
-      name: 'Họ tên',
-      truncateText: true,
-      width: '25%',
-    },
-    {
-      field: 'email',
-      name: 'Email',
+      field: 'name',
+      name: 'Tên dự án',
       truncateText: true,
       width: '30%',
     },
     {
-      field: 'phone',
-      name: 'SĐT',
+      field: 'type',
+      name: 'Kiểu',
+      truncateText: true,
+      width: '22%',
+    },
+    {
+      field: 'address',
+      name: 'Địa chỉ',
+      truncateText: true,
+      width: '25%',
+    },
+        {
+      field: 'investor',
+      name: 'Nhà Đầu Tư',
       truncateText: true,
       width: '20%',
     },
+{
+  field: 'image_url',
+  name: 'Hình ảnh',
+  truncateText: true,
+  width: '20%',
+  render: (value: string) => (
+    <img
+      src={value}
+      alt="Hình ảnh"
+      style={{ width: '100px', height: 'auto', objectFit: 'cover', borderRadius: '4px' }}
+    />
+  ),
+},
     {
-      field: 'system_rank',
+      field: 'rank',
       name: 'Cấp bậc',
-      width: '20%',
+      width: '10%',
       render: (rank: number) => <EuiHealth color="success">{rank}</EuiHealth>,
       truncateText: true,
     },
+  
     {
-      field: 'is_superuser',
-      name: 'Quyền hệ thống ',
-      width: '20%',
-      render: (isSuperuser: boolean) =>
-        isSuperuser ? (
-          <Badge color="yellow">Quản trị</Badge>
-        ) : (
-          <Badge variant="outline">Người dùng</Badge>
-        ),
-      truncateText: true,
-    },
-    {
-      name: 'Actions',
+      name: 'Thap Tác',
       width: '15%',
       render: (role: Role) => (
         <EuiFlexGroup wrap={false} gutterSize="s" alignItems="center">

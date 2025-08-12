@@ -4,7 +4,7 @@ import {
   FileButton,
   Flex,
   Group,
-  Input,
+
   Menu,
   Text,
   rem,
@@ -26,7 +26,7 @@ import {
   IconPlus,
   IconSearch,
   IconSettings,
-  IconStarFilled,
+
   IconTrash,
   IconUsers,
 } from "@tabler/icons-react";
@@ -34,6 +34,7 @@ import {
 import { useRef, useState } from "react";
 
 const AppAction = ({
+  language = "vi", // Mặc định là tiếng Việt
   openModal,
   openModalEdit,
   openModalDelete,
@@ -47,8 +48,7 @@ const AppAction = ({
   exportExcel,
   handleAggregate,
   handleUpdateRank,
-  handleUpdateExchangePoint,
-  isUpdateSearchItem,
+
   isShowOtherAction = false,
   isCustomerUpdate = false,
 }: AppActionProps) => {
@@ -179,13 +179,13 @@ const AppAction = ({
 
           {openModal && (
             <Button
-              onClick={openModal}
-              leftSection={<IconPlus size={14} />}
-              color="blue"
-              variant="outline"
-            >
-              Thêm mới
-            </Button>
+    onClick={openModal}
+    leftSection={<IconPlus size={14} />}
+    color="blue"
+    variant="outline"
+  >
+    {language === 'vi' ? 'Thêm mới' : 'Add New'}
+  </Button>
           )}
           {openModalAssign && (
             <Button
@@ -199,23 +199,23 @@ const AppAction = ({
           )}
           {openModalEdit && (
             <Button
-              leftSection={<IconEdit size={14} />}
-              onClick={openModalEdit}
-              color="orange"
-              variant="outline"
-            >
-              Chỉnh sửa
-            </Button>
+    leftSection={<IconEdit size={14} />}
+    onClick={openModalEdit}
+    color="orange"
+    variant="outline"
+  >
+    {language === 'vi' ? 'Chỉnh sửa' : 'Edit'}
+  </Button>
           )}
           {openModalDelete && (
-            <Button
-              leftSection={<IconTrash size={14} />}
-              onClick={openModalDelete}
-              color="red"
-              variant="outline"
-            >
-              Xóa (Đã chọn)
-            </Button>
+             <Button
+    leftSection={<IconTrash size={14} />}
+    onClick={openModalDelete}
+    color="red"
+    variant="outline"
+  >
+    {language === 'vi' ? 'Xóa (Đã chọn)' : 'Delete (Selected)'}
+  </Button>
           )}
 
           {openActivated && (
@@ -342,6 +342,7 @@ const AppAction = ({
 export default AppAction;
 
 type AppActionProps = {
+  language?: 'vi' | 'en'; // Ngôn ngữ hiển thị
   openModal?: () => void;
   openModalupdateExel?: () => void;
   openModalEdit?: () => void;
@@ -352,7 +353,7 @@ type AppActionProps = {
   handleAggregate?: () => void;
   handleUpdateRank?: () => void;
   openActiveAdmins?: () => void;
-  importExcel?: (e: any) => void;
+  importExcel?: (file: File | null) => void; // ✅ fix any -> File | null
   submitExcel?: () => void;
   exportExcel?: () => void;
   handleUpdateExchangePoint?: () => void;

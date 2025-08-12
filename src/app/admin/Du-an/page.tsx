@@ -10,10 +10,10 @@ import {
   EuiButtonIcon,
   Criteria,
 } from '@elastic/eui';
-import { Badge, Divider } from '@mantine/core';
+import { Divider } from '@mantine/core';
 import { modals } from '@mantine/modals';
 
-import { getListRoles } from '../../../../api/apigetlistuse';
+import { getListRoles } from '../../../../api/apigetlistprojects';
 import CreateView from './CreateView';
 import DeleteView from './DeleteView';
 import EditView from './EditView';
@@ -23,13 +23,14 @@ import { NotificationExtension } from '../../extension/NotificationExtension';
 import { paginationBase, PaginationOptions } from '../../_base/model/BaseTable';
 
 type Role = {
+  picture: string;
   id: string;
-  email: string;
-  full_name: string | null;
-  phone: string | null;
-  is_active: boolean;
-  is_superuser: boolean;
-  system_rank: number | null;
+  name: string;
+  type: string;
+  address: string;
+  investor: string;
+  image_url: string;
+  rank: number;
 };
 
 const RoleTable = () => {
@@ -38,6 +39,7 @@ const RoleTable = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedItems, setSelectedItems] = useState<Role[]>([]);
   const [pagination, setPagination] = useState<PaginationOptions>(paginationBase);
+  const [language, setLanguage] = useState<'vi' | 'en'>('vi');
 
   const fetchRoles = useCallback(async () => {
     setLoading(true);
@@ -45,7 +47,7 @@ const RoleTable = () => {
 
     const token = localStorage.getItem('access_token');
     if (!token) {
-      setError('⚠️ Không tìm thấy token. Vui lòng đăng nhập.');
+      setError(language === 'vi' ? '⚠️ Không tìm thấy token. Vui lòng đăng nhập.' : '⚠️ Token not found. Please login.');
       setLoading(false);
       return;
     }
@@ -58,6 +60,7 @@ const RoleTable = () => {
         token,
         skip,
         limit,
+        lang: language, // truyền ngôn ngữ
       });
 
       const { data, total } = res;
@@ -71,12 +74,12 @@ const RoleTable = () => {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('Đã xảy ra lỗi khi tải dữ liệu.');
+        setError(language === 'vi' ? 'Đã xảy ra lỗi khi tải dữ liệu.' : 'An error occurred while loading data.');
       }
     } finally {
       setLoading(false);
     }
-  }, [pagination.pageIndex, pagination.pageSize]);
+  }, [pagination.pageIndex, pagination.pageSize, language]);
 
   useEffect(() => {
     fetchRoles();
@@ -87,54 +90,61 @@ const RoleTable = () => {
       field: 'id',
       name: 'ID',
       truncateText: true,
-      width: '40%',
+      width: '20%',
     },
     {
-      field: 'full_name',
-      name: 'Họ tên',
-      truncateText: true,
-      width: '25%',
-    },
-    {
-      field: 'email',
-      name: 'Email',
+      field: 'name',
+      name: language === 'vi' ? 'Tên dự án' : 'Project Name',
       truncateText: true,
       width: '30%',
     },
     {
-      field: 'phone',
-      name: 'SĐT',
+      field: 'type',
+      name: language === 'vi' ? 'Kiểu' : 'Type',
+      truncateText: true,
+      width: '22%',
+    },
+    {
+      field: 'address',
+      name: language === 'vi' ? 'Địa chỉ' : 'Address',
+      truncateText: true,
+      width: '25%',
+    },
+    {
+      field: 'investor',
+      name: language === 'vi' ? 'Nhà Đầu Tư' : 'Investor',
       truncateText: true,
       width: '20%',
     },
     {
-      field: 'system_rank',
-      name: 'Cấp bậc',
+      field: 'image_url',
+      name: language === 'vi' ? 'Hình ảnh' : 'Image',
+      truncateText: true,
       width: '20%',
+      render: (value: string) => (
+        <img
+          src={value}
+          alt={language === 'vi' ? 'Hình ảnh' : 'Image'}
+          style={{ width: '100px', height: 'auto', objectFit: 'cover', borderRadius: '4px' }}
+        />
+      ),
+    },
+    {
+      field: 'rank',
+      name: language === 'vi' ? 'Cấp bậc' : 'Rank',
+      width: '10%',
       render: (rank: number) => <EuiHealth color="success">{rank}</EuiHealth>,
       truncateText: true,
     },
     {
-      field: 'is_superuser',
-      name: 'Quyền hệ thống ',
-      width: '20%',
-      render: (isSuperuser: boolean) =>
-        isSuperuser ? (
-          <Badge color="yellow">Quản trị</Badge>
-        ) : (
-          <Badge variant="outline">Người dùng</Badge>
-        ),
-      truncateText: true,
-    },
-    {
-      name: 'Actions',
+      name: language === 'vi' ? 'Thao Tác' : 'Actions',
       width: '15%',
       render: (role: Role) => (
         <EuiFlexGroup wrap={false} gutterSize="s" alignItems="center">
           <EuiFlexItem grow={false}>
             <EuiButtonIcon
               iconType="documentEdit"
-              aria-label="Edit"
+              aria-label={language === 'vi' ? 'Chỉnh sửa' : 'Edit'}
               color="success"
               onClick={() => openEditUserModal(role)}
             />
@@ -142,7 +152,7 @@ const RoleTable = () => {
           <EuiFlexItem grow={false}>
             <EuiButtonIcon
               iconType="trash"
-              aria-label="Delete"
+              aria-label={language === 'vi' ? 'Xóa' : 'Delete'}
               color="danger"
               onClick={() => openDeleteUserModal(role)}
             />
@@ -152,10 +162,11 @@ const RoleTable = () => {
     },
   ];
 
+  // Modal thêm
   const openModal = () => {
     modals.openConfirmModal({
-      title: <div style={{ fontWeight: 600, fontSize: 18 }}>Thêm vai trò mới</div>,
-      children: <CreateView onSearch={fetchRoles} />,
+      title: <div style={{ fontWeight: 600, fontSize: 18 }}>{language === 'vi' ? 'Thêm dự án mới' : 'Add New Project'}</div>,
+      children: <CreateView onSearch={fetchRoles} language={language} />,
       size: 'lg',
       radius: 'md',
       confirmProps: { display: 'none' },
@@ -163,9 +174,29 @@ const RoleTable = () => {
     });
   };
 
+  // Modal sửa
+  const openEditUserModal = (role: Role) => {
+    modals.openConfirmModal({
+      title: <div style={{ fontWeight: 600, fontSize: 18 }}>{language === 'vi' ? 'Chỉnh sửa dự án' : 'Edit Project'}</div>,
+      children: <EditView id={role.id} onSearch={fetchRoles} language={language} />,
+      confirmProps: { display: 'none' },
+      cancelProps: { display: 'none' },
+    });
+  };
+
+  // Modal xóa
+  const openDeleteUserModal = (role: Role) => {
+    modals.openConfirmModal({
+      title: <div style={{ fontWeight: 600, fontSize: 18 }}>{language === 'vi' ? 'Xóa dự án' : 'Delete Project'}</div>,
+      children: <DeleteView idItem={[role.id]} onSearch={fetchRoles} language={language} />,
+      confirmProps: { display: 'none' },
+      cancelProps: { display: 'none' },
+    });
+  };
+
   const openModalEdit = () => {
     if (selectedItems.length !== 1) {
-      NotificationExtension.Warn('Vui lòng chọn 1 vai trò để chỉnh sửa');
+      NotificationExtension.Warn(language === 'vi' ? 'Vui lòng chọn 1 dự án để chỉnh sửa' : 'Please select exactly 1 project to edit');
       return;
     }
     openEditUserModal(selectedItems[0]);
@@ -173,31 +204,13 @@ const RoleTable = () => {
 
   const openModalDelete = () => {
     if (selectedItems.length < 1) {
-      NotificationExtension.Warn('Vui lòng chọn ít nhất 1 vai trò để xóa');
+      NotificationExtension.Warn(language === 'vi' ? 'Vui lòng chọn ít nhất 1 dự án để xóa' : 'Please select at least 1 project to delete');
       return;
     }
     const ids = selectedItems.map((role) => role.id);
     modals.openConfirmModal({
-      title: <div style={{ fontWeight: 600, fontSize: 18 }}>Xóa vai trò</div>,
-      children: <DeleteView idItem={ids} onSearch={fetchRoles} />,
-      confirmProps: { display: 'none' },
-      cancelProps: { display: 'none' },
-    });
-  };
-
-  const openEditUserModal = (role: Role) => {
-    modals.openConfirmModal({
-      title: <div style={{ fontWeight: 600, fontSize: 18 }}>Chỉnh sửa vai trò</div>,
-      children: <EditView id={role.id} onSearch={fetchRoles} />,
-      confirmProps: { display: 'none' },
-      cancelProps: { display: 'none' },
-    });
-  };
-
-  const openDeleteUserModal = (role: Role) => {
-    modals.openConfirmModal({
-      title: <div style={{ fontWeight: 600, fontSize: 18 }}>Xóa vai trò</div>,
-      children: <DeleteView idItem={[role.id]} onSearch={fetchRoles} />,
+      title: <div style={{ fontWeight: 600, fontSize: 18 }}>{language === 'vi' ? 'Xóa dự án' : 'Delete Project'}</div>,
+      children: <DeleteView idItem={ids} onSearch={fetchRoles} language={language} />,
       confirmProps: { display: 'none' },
       cancelProps: { display: 'none' },
     });
@@ -220,18 +233,34 @@ const RoleTable = () => {
 
   return (
     <>
+      {/* Dropdown chọn ngôn ngữ */}
+      <div style={{ marginBottom: 12 }}>
+        <label htmlFor="language-select" style={{ marginRight: 8 }}>
+          {language === 'vi' ? 'Chọn ngôn ngữ:' : 'Select Language:'}
+        </label>
+        <select
+          id="language-select"
+          value={language}
+          onChange={(e) => setLanguage(e.target.value as 'vi' | 'en')}
+        >
+          <option value="vi">Tiếng Việt</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
       <AppAction
         openModal={openModal}
         openModalDelete={openModalDelete}
         openModalEdit={openModalEdit}
+        language={language}
       />
 
-      <Divider my="sm" label="Danh sách vai trò" labelPosition="center" />
-      <AppSearch />
+      <Divider my="sm" label={language === 'vi' ? 'Danh sách dự án' : 'Project List'} labelPosition="center" />
+   <AppSearch language={language} />
       <Divider my="sm" />
 
       <EuiBasicTable
-        tableCaption="Danh sách vai trò hệ thống"
+        tableCaption={language === 'vi' ? 'Danh sách dự án hệ thống' : 'System Project List'}
         responsiveBreakpoint={false}
         items={roles}
         columns={columns}
@@ -243,8 +272,8 @@ const RoleTable = () => {
           error
             ? error
             : loading
-            ? 'Đang tải dữ liệu...'
-            : 'Không có vai trò nào.'
+            ? language === 'vi' ? 'Đang tải dữ liệu...' : 'Loading data...'
+            : language === 'vi' ? 'Không có dự án nào.' : 'No projects found.'
         }
         pagination={{
           pageIndex: pagination.pageIndex,
@@ -259,3 +288,4 @@ const RoleTable = () => {
 };
 
 export default RoleTable;
+

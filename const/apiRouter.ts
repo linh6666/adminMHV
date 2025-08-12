@@ -16,6 +16,9 @@ CREATE_SYSTEM:"/api/v1/system/",
 EDIT_SYSTEM:"/api/v1/system/{user_id}",
 DELETE_SYSTEM: "/api/v1/system/{user_id}",
 
-
-
+///Projects
+GET_LIST_PROJECTS: "/api/v1/projects/",
+CREATE_PROJECTS: "/api/v1/projects/",
+EDIT_PROJECTS: "/api/v1/projects/{project_id}",
+DELETE_PROJECTS: "/api/v1/projects/{project_id}",
   };

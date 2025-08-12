@@ -13,7 +13,7 @@ import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { API_ROUTE } from "../../../../const/apiRouter";
 import { api } from "../../../../library/axios";
 import { CreateUserPayload } from "../../../../api/apicreateuser";
@@ -40,16 +40,15 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
       email: (value) => (value ? null : "Email không được để trống"),
       full_name: (value) => (value ? null : "Họ và tên không được để trống"),
       phone: (value) => (value ? null : "Số điện thoại không được để trống"),
-     
     },
   });
 
+  /** Submit cập nhật user */
   const handleSubmit = async (values: CreateUserPayload) => {
     open();
     try {
       const url = API_ROUTE.EDIT_USERNAME.replace("{user_id}", id);
-      await api.
-patch(url, values);
+      await api.patch(url, values);
       await onSearch();
       modals.closeAll();
     } catch (error) {
@@ -60,7 +59,9 @@ patch(url, values);
     }
   };
 
-  const fetchUserDetail = async () => {
+  /** Lấy dữ liệu chi tiết user */
+  const fetchUserDetail = useCallback(async () => {
+    if (!id) return;
     open();
     try {
       const url = API_ROUTE.EDIT_USERNAME.replace("{user_id}", id);
@@ -83,11 +84,12 @@ patch(url, values);
     } finally {
       close();
     }
-  };
+  }, [id, open, close]); // Không đưa form vào dependency để tránh loop
 
+  /** Chỉ gọi khi id thay đổi */
   useEffect(() => {
-    if (id) fetchUserDetail();
-  }, [id]);
+    fetchUserDetail();
+  }, [fetchUserDetail]);
 
   return (
     <Box

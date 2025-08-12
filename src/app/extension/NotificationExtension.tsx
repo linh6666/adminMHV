@@ -1,13 +1,13 @@
-import { showNotification, updateNotification } from "@mantine/notifications";
+import { showNotification  } from "@mantine/notifications";
 import {
-  Icon2fa,
+
   IconAccessPoint,
   IconCheck,
-  IconInbox,
+
   IconInfoCircle,
   IconX,
 } from "@tabler/icons-react";
-import { notifications } from "@mantine/notifications";
+
 function Success(noti: string | undefined) {
   showNotification({
     title: "Thông báo",

@@ -1,4 +1,4 @@
-import { Pagination } from "@elastic/eui";
+// import { Pagination } from "@elastic/eui";
 
 export interface PaginationOptions {
   pageSizeOptions?: number[];

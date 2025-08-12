@@ -123,52 +123,36 @@ import {
   EuiFlexItem,
   EuiFormRow,
 } from "@elastic/eui";
-import { Menu, Tooltip } from "@mantine/core";
-import { IconChevronDown } from "@tabler/icons-react";
 
-const AppSearch = () => {
+interface AppSearchProps {
+  language?: 'vi' | 'en';
+}
+
+const AppSearch: React.FC<AppSearchProps> = ({ language = 'vi' }) => {
   return (
     <EuiFlexGroup>
-      <EuiFormRow style={{ maxWidth: "100%", height: "60px" }} >
+      <EuiFormRow style={{ maxWidth: "100%", height: "60px" }}>
         <EuiFlexGroup alignItems="flexEnd">
           <EuiFlexItem grow>
             <EuiFieldSearch
-              placeholder="Nhập..."
-              aria-label="An example of search with fullWidth"
-            
-            
+              placeholder={language === 'vi' ? 'Nhập...' : 'Enter...'}
+              aria-label={language === 'vi' ? 'Trường tìm kiếm' : 'Search field'}
+              fullWidth
             />
           </EuiFlexItem>
 
-          {/* <EuiFlexItem grow={false}>
-            <Menu
-              trigger="hover"
-              closeOnClickOutside={false}
-              shadow="md"
-              width={500}
-              openDelay={100}
-              closeDelay={300}
-            >
-             
-              <Menu.Dropdown>
-                <Menu.Label>Tùy chọn tìm kiếm</Menu.Label>
-              </Menu.Dropdown>
-            </Menu>
-          </EuiFlexItem */}
-
           <EuiFlexItem grow={false}>
-      <EuiButton
-  iconType="lensApp"
-  style={{
-    border: "none",
-    boxShadow: "none",
-    backgroundColor: "rgb(64, 108, 136)", // hoặc bất kỳ màu nào bạn muốn
-    color: "#fff", // nếu cần thay màu chữ cho phù hợp
-  }}
->
-  Tìm kiếm
-</EuiButton>
-
+            <EuiButton
+              iconType="lensApp"
+              style={{
+                border: "none",
+                boxShadow: "none",
+                backgroundColor: "rgb(64, 108, 136)",
+                color: "#fff",
+              }}
+            >
+              {language === 'vi' ? 'Tìm kiếm' : 'Search'}
+            </EuiButton>
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiFormRow>
@@ -177,3 +161,4 @@ const AppSearch = () => {
 };
 
 export default AppSearch;
+
