@@ -21,4 +21,11 @@ GET_LIST_PROJECTS: "/api/v1/projects/",
 CREATE_PROJECTS: "/api/v1/projects/",
 EDIT_PROJECTS: "/api/v1/projects/{project_id}",
 DELETE_PROJECTS: "/api/v1/projects/{project_id}",
+
+//Project Users
+GET_LIST_PROJECT_USERS: "/api/v1/UserProjectRole/assignments/",
+CREATE_PROJECT_USERS: "/api/v1/UserProjectRole/{project_id}",
+EDIT_PROJECT_USERS: "/api/v1/UserProjectRole/{user_id}/{project_id}/{old_role_id}",
+DELETE_PROJECT_USERS: "/api/v1/UserProjectRole/{user_project_role_id}",
+GET_DETAIL_PROJECT_USERS: "/api/v1/UserProjectRole/{user_project_role_id}",
   };

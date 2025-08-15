@@ -45,7 +45,8 @@ export const mockdata: NavItem[] = [
     initiallyOpened: true,
     links: [
      
-      { label: "Danh sách dự án EN/VI", link: "/admin/Du-an" },
+      { label: "Danh sách dự án", link: "/admin/Du-an" },
+         { label: "Danh sách Người dùng dự án ", link: "/admin/UserProject" }, 
   
 
     ],

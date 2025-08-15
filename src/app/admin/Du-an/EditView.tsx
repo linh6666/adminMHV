@@ -15,7 +15,7 @@ import { IconCheck, IconX } from "@tabler/icons-react";
 import { useEffect } from "react";
 import { API_ROUTE } from "../../../../const/apiRouter";
 import { api } from "../../../../library/axios";
-import { CreateProjectPayload } from "../../../../api/apicreateproject";
+import { CreateProjectPayload } from "../../../../api/apiEditproject";
 
 interface EditViewProps {
   onSearch: () => Promise<void>;
@@ -28,25 +28,19 @@ const EditView = ({ onSearch, id, language = "vi" }: EditViewProps) => {
 
   const form = useForm<CreateProjectPayload>({
     initialValues: {
-      name_vi: "",
-      address_vi: "",
-      type_vi: "",
-      investor_vi: "",
-      name_en: "",
-      address_en: "",
-      type_en: "",
-      investor_en: "",
+      name: "",
+      address: "",
+      type: "",
+      investor: "",
+      image_url: "",
       picture: "",
     },
     validate: {
-      name_vi: isNotEmpty("Tên tiếng Việt không được để trống"),
-      address_vi: isNotEmpty("Địa chỉ tiếng Việt không được để trống"),
-      type_vi: isNotEmpty("Loại tiếng Việt không được để trống"),
-      investor_vi: isNotEmpty("Nhà đầu tư tiếng Việt không được để trống"),
-      name_en: isNotEmpty("Tên tiếng Anh không được để trống"),
-      address_en: isNotEmpty("Địa chỉ tiếng Anh không được để trống"),
-      type_en: isNotEmpty("Loại tiếng Anh không được để trống"),
-      investor_en: isNotEmpty("Nhà đầu tư tiếng Anh không được để trống"),
+      name: isNotEmpty("Tên tiếng Việt không được để trống"),
+      address: isNotEmpty("Địa chỉ tiếng Việt không được để trống"),
+      type: isNotEmpty("Loại tiếng Việt không được để trống"),
+      investor: isNotEmpty("Nhà đầu tư tiếng Việt không được để trống"),
+      image_url: isNotEmpty("URL hình ảnh không được để trống"),
       picture: isNotEmpty(
         language === "vi" ? "Không được để trống" : "Cannot be empty"
       ),
@@ -90,14 +84,11 @@ const EditView = ({ onSearch, id, language = "vi" }: EditViewProps) => {
 
         if (projectData) {
           form.setValues({
-            name_vi: projectData.name_vi || "",
-            address_vi: projectData.address_vi || "",
-            type_vi: projectData.type_vi || "",
-            investor_vi: projectData.investor_vi || "",
-            name_en: projectData.name_en || "",
-            address_en: projectData.address_en || "",
-            type_en: projectData.type_en || "",
-            investor_en: projectData.investor_en || "",
+            name: projectData.name || "",
+            address: projectData.address || "",
+            type: projectData.type || "",
+            investor: projectData.investor || "",
+            image_url: projectData.image_url || "",
             picture: projectData.picture || "",
           });
         } else {
@@ -135,73 +126,71 @@ const EditView = ({ onSearch, id, language = "vi" }: EditViewProps) => {
         overlayProps={{ radius: "sm", blur: 2 }}
       />
 
-      {/* Nếu là tiếng Việt thì hiển thị nhóm input tiếng Việt */}
-      {language === "vi" && (
-        <SimpleGrid cols={2}>
-          <TextInput
-            label="Tên dự án"
-            placeholder="Nhập tên dự án"
-            withAsterisk
-            mt="md"
-            {...form.getInputProps("name_vi")}
-          />
-          <TextInput
-            label="Địa chỉ"
-            placeholder="Nhập Địa chỉ"
-            withAsterisk
-            mt="md"
-            {...form.getInputProps("address_vi")}
-          />
-          <TextInput
-            label="Kiểu"
-            placeholder="Nhập kiểu"
-            withAsterisk
-            mt="md"
-            {...form.getInputProps("type_vi")}
-          />
-          <TextInput
-            label="Nhà đầu tư"
-            placeholder="Nhập nhà đầu tư"
-            withAsterisk
-            mt="md"
-            {...form.getInputProps("investor_vi")}
-          />
-        </SimpleGrid>
-      )}
+              <TextInput
+        label={language === "vi" ? "Tên " : "Name"}
+        placeholder={
+          language === "vi" ? "Nhập tên " : "Enter name"
+        }
+        withAsterisk
+        mt="md"
+        {...form.getInputProps("name")}
+      />
+               <TextInput
+        label={language === "vi" ? "Địa chỉ " : "Address"}
+        placeholder={
+          language === "vi" ? "Nhập địa chỉ " : "Enter address"
+        }
+        withAsterisk
+        mt="md"
+        {...form.getInputProps("address")}
+      />
+            <TextInput
+        label={language === "vi" ? "kiểu" : "type"}
+        placeholder={
+          language === "vi" ? "Nhập kiểu " : "Enter type"
+        }
+        withAsterisk
+        mt="md"
+        {...form.getInputProps("type")}
+      />
+               <TextInput
+        label={language === "vi" ? "Nhà đầu tư " : "Investor"}
+        placeholder={
+          language === "vi" ? "Nhập nhà đầu tư " : "Enter investor"
+        }
+        withAsterisk
+        mt="md"
+        {...form.getInputProps("investor")}
+      />
+           <TextInput
+  label={language === "vi" ? "Hình ảnh" : "Image URL"}
+  placeholder={language === "vi" ? "Nhập link ảnh" : "Enter image URL"}
+  withAsterisk
+  mt="md"
+  {...form.getInputProps("image_url")}
+/>
 
-      {/* Nếu là tiếng Anh thì hiển thị nhóm input tiếng Anh */}
-      {language === "en" && (
-        <SimpleGrid cols={2}>
-          <TextInput
-            label="Name"
-            placeholder="Enter name"
-            withAsterisk
-            mt="md"
-            {...form.getInputProps("name_en")}
-          />
-          <TextInput
-            label="Address"
-            placeholder="Enter address"
-            withAsterisk
-            mt="md"
-            {...form.getInputProps("address_en")}
-          />
-          <TextInput
-            label="Type"
-            placeholder="Enter type"
-            withAsterisk
-            mt="md"
-            {...form.getInputProps("type_en")}
-          />
-          <TextInput
-            label="Investor"
-            placeholder="Enter investor"
-            withAsterisk
-            mt="md"
-            {...form.getInputProps("investor_en")}
-          />
-        </SimpleGrid>
-      )}
+{form.values.image_url && (
+  <img
+    src={form.values.image_url}
+    alt="Preview"
+    style={{
+      marginTop: "10px",
+      maxWidth: "200px",
+      border: "1px solid #ccc",
+      borderRadius: "4px",
+    }}
+  />
+)}
+    
+
+    
+
+    
+
+
+
+    
 
       {/* Trường picture dùng chung cho cả 2 */}
       <TextInput
