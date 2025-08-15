@@ -21,6 +21,7 @@ import AppAction from '../../common/AppAction';
 import AppSearch from '@/app/common/AppSearch';
 import { NotificationExtension } from '../../extension/NotificationExtension';
 import { paginationBase, PaginationOptions } from '../../_base/model/BaseTable';
+import Image from 'next/image';
 
 type Role = {
   picture: string;
@@ -122,8 +123,10 @@ const RoleTable = () => {
       truncateText: true,
       width: '20%',
       render: (value: string) => (
-        <img
+        <Image
           src={value}
+              width={200} // Thay đổi giá trị này theo kích thước bạn cần
+          height={150} // Thay đổi giá trị này theo kích thước bạn cần
           alt={language === 'vi' ? 'Hình ảnh' : 'Image'}
           style={{ width: '100px', height: 'auto', objectFit: 'cover', borderRadius: '4px' }}
         />

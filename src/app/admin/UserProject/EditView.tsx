@@ -11,7 +11,7 @@ import { useForm, isNotEmpty } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconCheck, IconChevronDown, IconX } from "@tabler/icons-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { api } from "../../../../library/axios";
 import { API_ROUTE } from "../../../../const/apiRouter";
 import { CreateProjectPayload } from "../../../../api/apiEditUserProject";
@@ -34,6 +34,12 @@ interface Option {
   label: string;
 }
 
+interface UserProjectRole {
+  project_id: string;
+  role_id: string;
+  user_id: string;
+}
+
 const EditView = ({
   onSearch,
   user_id,
@@ -45,7 +51,6 @@ const EditView = ({
   const hasFetched = useRef(false);
 
   const [projectNameOptions, setProjectNameOptions] = useState<Option[]>([]);
- 
   const [roleOptions, setRoleOptions] = useState<Option[]>([]);
   const [userOptions, setUserOptions] = useState<Option[]>([]);
 
@@ -63,7 +68,7 @@ const EditView = ({
   });
 
   /** Gọi API lấy thông tin user để fill form */
-  const fetchUserDetail = async () => {
+  const fetchUserDetail = useCallback(async () => {
     if (!user_project_role_id) return;
     open();
     try {
@@ -71,7 +76,7 @@ const EditView = ({
         "{user_project_role_id}",
         user_project_role_id
       );
-      const { data: userData } = await api.get(url);
+      const { data: userData } = await api.get<UserProjectRole>(url);
       form.setValues({
         project_id: userData.project_id || "",
         role_id: userData.role_id || "",
@@ -84,10 +89,10 @@ const EditView = ({
     } finally {
       close();
     }
-  };
+  }, [user_project_role_id, open, close, form]);
 
   /** Gọi API lấy list project, role, user */
-  const fetchSelectOptions = async () => {
+  const fetchSelectOptions = useCallback(async () => {
     try {
       const token = localStorage.getItem("access_token") || "";
       if (!token) {
@@ -96,28 +101,27 @@ const EditView = ({
       }
 
       // Projects
-      const resProjects = await getProjects({ token });
+      const resProjects = await getProjects({ token }) as { data: { id: string }[] };
       setProjectNameOptions(
-        resProjects.data.map((item: any) => ({
+        resProjects.data.map((item) => ({
           value: String(item.id),
           label: item.id,
         }))
       );
-     
 
       // Roles
-      const resRoles = await getRoles({ token });
+      const resRoles = await getRoles({ token }) as { data: { id: string }[] };
       setRoleOptions(
-        resRoles.data.map((item: any) => ({
+        resRoles.data.map((item) => ({
           value: String(item.id),
           label: item.id,
         }))
       );
 
       // Users
-      const resUsers = await getUsers({ token });
+      const resUsers = await getUsers({ token }) as { data: { id: string }[] };
       setUserOptions(
-        resUsers.data.map((item: any) => ({
+        resUsers.data.map((item) => ({
           value: String(item.id),
           label: item.id,
         }))
@@ -125,7 +129,7 @@ const EditView = ({
     } catch (error) {
       console.error("Lỗi khi load danh sách select:", error);
     }
-  };
+  }, []); // Không có phụ thuộc
 
   /** Chỉ gọi 1 lần khi mở modal */
   useEffect(() => {
@@ -134,7 +138,7 @@ const EditView = ({
       fetchSelectOptions();
       fetchUserDetail();
     }
-  }, []);
+  }, [fetchSelectOptions, fetchUserDetail]);
 
   /** Submit form */
   const handleSubmit = async (values: CreateProjectPayload) => {
@@ -169,11 +173,10 @@ const EditView = ({
         {...form.getInputProps("project_id")}
       />
 
-    
       {/* Select vai trò */}
       <NativeSelect
         rightSection={<IconChevronDown size={16} />}
-        label=" ID Vai trò"
+        label="ID Vai trò"
         data={roleOptions.length ? roleOptions : [{ value: "", label: "Đang tải..." }]}
         mt="md"
         {...form.getInputProps("role_id")}
@@ -208,7 +211,6 @@ const EditView = ({
 };
 
 export default EditView;
-
 
 
 

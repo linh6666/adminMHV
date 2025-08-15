@@ -12,7 +12,7 @@ import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { API_ROUTE } from "../../../../const/apiRouter";
 import { api } from "../../../../library/axios";
 import { CreateUserPayload } from "../../../../api/apicreaterole";
@@ -24,7 +24,7 @@ interface EditViewProps {
 
 const EditView = ({ onSearch, id }: EditViewProps) => {
   const [visible, { open, close }] = useDisclosure(false);
-
+  
   const form = useForm<CreateUserPayload>({
     initialValues: {
       name: "",
@@ -37,6 +37,8 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
       description: (value) => (value ? null : "Mô tả không được để trống"),
     },
   });
+
+  const formRef = useRef(form); // Sử dụng useRef để giữ form
 
   /** Submit cập nhật role */
   const handleSubmit = async (values: CreateUserPayload) => {
@@ -63,7 +65,7 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
       const response = await api.get(url);
       const userData = response.data;
 
-      form.setValues({
+      formRef.current.setValues({
         name: userData.name || "",
         rank: userData.rank ?? 0,
         description: userData.description || "",
@@ -75,7 +77,7 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
     } finally {
       close();
     }
-  }, [id, open, close]); // Không đưa form vào dependency
+  }, [id, open, close]); // Không thêm form vào dependency
 
   /** Chỉ gọi khi id thay đổi */
   useEffect(() => {

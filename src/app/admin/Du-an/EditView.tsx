@@ -5,17 +5,17 @@ import {
   Button,
   Group,
   LoadingOverlay,
-  SimpleGrid,
   TextInput,
 } from "@mantine/core";
 import { useForm, isNotEmpty } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { API_ROUTE } from "../../../../const/apiRouter";
 import { api } from "../../../../library/axios";
 import { CreateProjectPayload } from "../../../../api/apiEditproject";
+import Image from "next/image";
 
 interface EditViewProps {
   onSearch: () => Promise<void>;
@@ -47,10 +47,11 @@ const EditView = ({ onSearch, id, language = "vi" }: EditViewProps) => {
     },
   });
 
+  const formRef = useRef(form); // Sử dụng useRef để giữ form ổn định
+
   const handleSubmit = async (values: CreateProjectPayload) => {
     open();
     try {
-      // Thêm language dưới dạng query param
       const url =
         API_ROUTE.EDIT_PROJECTS.replace("{project_id}", id) + `?lang=${language}`;
 
@@ -75,7 +76,6 @@ const EditView = ({ onSearch, id, language = "vi" }: EditViewProps) => {
     const fetchProjectDetail = async () => {
       open();
       try {
-        // Thêm language dưới dạng query param
         const url =
           API_ROUTE.EDIT_PROJECTS.replace("{project_id}", id) + `?lang=${language}`;
 
@@ -83,7 +83,7 @@ const EditView = ({ onSearch, id, language = "vi" }: EditViewProps) => {
         const projectData = response.data;
 
         if (projectData) {
-          form.setValues({
+          formRef.current.setValues({ // Sử dụng formRef để cập nhật giá trị
             name: projectData.name || "",
             address: projectData.address || "",
             type: projectData.type || "",
@@ -111,7 +111,7 @@ const EditView = ({ onSearch, id, language = "vi" }: EditViewProps) => {
     };
 
     fetchProjectDetail();
-  }, [id, language]);
+  }, [id, language, open, close]); // Không thêm form vào mảng phụ thuộc
 
   return (
     <Box
@@ -126,7 +126,7 @@ const EditView = ({ onSearch, id, language = "vi" }: EditViewProps) => {
         overlayProps={{ radius: "sm", blur: 2 }}
       />
 
-              <TextInput
+      <TextInput
         label={language === "vi" ? "Tên " : "Name"}
         placeholder={
           language === "vi" ? "Nhập tên " : "Enter name"
@@ -135,7 +135,7 @@ const EditView = ({ onSearch, id, language = "vi" }: EditViewProps) => {
         mt="md"
         {...form.getInputProps("name")}
       />
-               <TextInput
+      <TextInput
         label={language === "vi" ? "Địa chỉ " : "Address"}
         placeholder={
           language === "vi" ? "Nhập địa chỉ " : "Enter address"
@@ -144,8 +144,8 @@ const EditView = ({ onSearch, id, language = "vi" }: EditViewProps) => {
         mt="md"
         {...form.getInputProps("address")}
       />
-            <TextInput
-        label={language === "vi" ? "kiểu" : "type"}
+      <TextInput
+        label={language === "vi" ? "Kiểu" : "Type"}
         placeholder={
           language === "vi" ? "Nhập kiểu " : "Enter type"
         }
@@ -153,7 +153,7 @@ const EditView = ({ onSearch, id, language = "vi" }: EditViewProps) => {
         mt="md"
         {...form.getInputProps("type")}
       />
-               <TextInput
+      <TextInput
         label={language === "vi" ? "Nhà đầu tư " : "Investor"}
         placeholder={
           language === "vi" ? "Nhập nhà đầu tư " : "Enter investor"
@@ -162,37 +162,29 @@ const EditView = ({ onSearch, id, language = "vi" }: EditViewProps) => {
         mt="md"
         {...form.getInputProps("investor")}
       />
-           <TextInput
-  label={language === "vi" ? "Hình ảnh" : "Image URL"}
-  placeholder={language === "vi" ? "Nhập link ảnh" : "Enter image URL"}
-  withAsterisk
-  mt="md"
-  {...form.getInputProps("image_url")}
-/>
+      <TextInput
+        label={language === "vi" ? "Hình ảnh" : "Image URL"}
+        placeholder={language === "vi" ? "Nhập link ảnh" : "Enter image URL"}
+        withAsterisk
+        mt="md"
+        {...form.getInputProps("image_url")}
+      />
 
-{form.values.image_url && (
-  <img
-    src={form.values.image_url}
-    alt="Preview"
-    style={{
-      marginTop: "10px",
-      maxWidth: "200px",
-      border: "1px solid #ccc",
-      borderRadius: "4px",
-    }}
-  />
-)}
+      {form.values.image_url && (
+        <Image
+          src={form.values.image_url}
+          alt="Preview"
+          width={200} // Thay đổi giá trị này theo kích thước bạn cần
+          height={150} // Thay đổi giá trị này theo kích thước bạn cần
+          style={{
+            marginTop: "10px",
+            maxWidth: "200px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+          }}
+        />
+      )}
     
-
-    
-
-    
-
-
-
-    
-
-      {/* Trường picture dùng chung cho cả 2 */}
       <TextInput
         label={language === "vi" ? "Tên hình ảnh" : "Picture Name"}
         placeholder={
@@ -228,6 +220,5 @@ const EditView = ({ onSearch, id, language = "vi" }: EditViewProps) => {
 };
 
 export default EditView;
-
 
 

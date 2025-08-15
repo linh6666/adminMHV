@@ -26,6 +26,21 @@ interface Option {
   label: string;
 }
 
+interface Project {
+  id: string;
+  name: string;
+}
+
+interface Role {
+  id: string;
+  name: string;
+}
+
+interface User {
+  id: string;
+  email: string;
+}
+
 const CreateView = ({ onSearch }: CreateViewProps) => {
   const [visible, { open, close }] = useDisclosure(false);
 
@@ -54,38 +69,34 @@ const CreateView = ({ onSearch }: CreateViewProps) => {
       try {
         const token = localStorage.getItem("access_token") || "";
 
-        // Gọi cùng lúc 3 API
         const [resProjects, resRoles, resUsers] = await Promise.all([
-          getProjects({ token }),
-          getRoles({ token }),
-          getUsers({ token }),
+          getProjects({ token }) as Promise<{ data: Project[] }>,
+          getRoles({ token }) as Promise<{ data: Role[] }>,
+          getUsers({ token }) as Promise<{ data: User[] }>,
         ]);
 
-        // Project options
         setProjectNameOptions(
-          resProjects.data.map((item: any) => ({
+          resProjects.data.map((item) => ({
             value: String(item.id),
             label: item.name,
           }))
         );
         setProjectIdOptions(
-          resProjects.data.map((item: any) => ({
+          resProjects.data.map((item) => ({
             value: String(item.id),
             label: String(item.id),
           }))
         );
 
-        // Role options
         setRoleOptions(
-          resRoles.data.map((item: any) => ({
+          resRoles.data.map((item) => ({
             value: String(item.id),
             label: item.name,
           }))
         );
 
-        // User options
         setUserOptions(
-          resUsers.data.map((item: any) => ({
+          resUsers.data.map((item) => ({
             value: String(item.id),
             label: item.email,
           }))
@@ -99,32 +110,31 @@ const CreateView = ({ onSearch }: CreateViewProps) => {
   }, []);
 
   const handleSubmit = async (values: typeof form.values) => {
-  open(); // show LoadingOverlay
-  try {
-    // Kiểm tra giá trị project_id
-    console.log("Giá trị project_id:", values.project_id);
+    open();
+    try {
+      console.log("Giá trị project_id:", values.project_id);
 
-    // Tạo payload đúng type CreateUserPayload
-    const payload: CreateUserPayload = {
-      project_name: values.project_name,
-      project_id: values.project_id ? String(values.project_id) : "", // Giữ nguyên dưới dạng chuỗi
-      user_id: values.user_id ? String(values.user_id) : undefined, // Chỉ gửi nếu có giá trị
-      role_id: values.role_id ? String(values.role_id) : undefined, // Chỉ gửi nếu có giá trị
-    };
+      const payload: CreateUserPayload = {
+        project_name: values.project_name,
+        project_id: values.project_id ? String(values.project_id) : "",
+        user_id: values.user_id ? String(values.user_id) : undefined,
+        role_id: values.role_id ? String(values.role_id) : undefined,
+      };
 
-    console.log("Payload gửi đi:", payload); // Kiểm tra payload
+      console.log("Payload gửi đi:", payload);
 
-    await createUser(payload.project_id, payload); // Gọi API với project_id là chuỗi
+      await createUser(payload.project_id, payload);
 
-    await onSearch(); // refresh dữ liệu
-    modals.closeAll();
-  } catch (error) {
-    console.error("Lỗi khi tạo user:", error);
-    alert("Đã xảy ra lỗi khi tạo người dùng.");
-  } finally {
-    close(); // hide LoadingOverlay
-  }
-};
+      await onSearch();
+      modals.closeAll();
+    } catch (error) {
+      console.error("Lỗi khi tạo user:", error);
+      alert("Đã xảy ra lỗi khi tạo người dùng.");
+    } finally {
+      close();
+    }
+  };
+
   return (
     <Box component="form" miw={320} mx="auto" onSubmit={form.onSubmit(handleSubmit)}>
       <LoadingOverlay
@@ -133,7 +143,6 @@ const CreateView = ({ onSearch }: CreateViewProps) => {
         overlayProps={{ radius: "sm", blur: 2 }}
       />
 
-      {/* Select dự án theo tên */}
       <NativeSelect
         rightSection={<IconChevronDown size={16} />}
         label="Danh sách dự án"
@@ -142,7 +151,6 @@ const CreateView = ({ onSearch }: CreateViewProps) => {
         {...form.getInputProps("project_name")}
       />
 
-      {/* Select ID người dùng */}
       <NativeSelect
         rightSection={<IconChevronDown size={16} />}
         label="Người dùng"
@@ -151,7 +159,6 @@ const CreateView = ({ onSearch }: CreateViewProps) => {
         {...form.getInputProps("user_id")}
       />
 
-      {/* Select ID dự án */}
       <NativeSelect
         rightSection={<IconChevronDown size={16} />}
         label="ID dự án"
@@ -160,7 +167,6 @@ const CreateView = ({ onSearch }: CreateViewProps) => {
         {...form.getInputProps("project_id")}
       />
 
-      {/* Select vai trò */}
       <NativeSelect
         rightSection={<IconChevronDown size={16} />}
         label="Vai trò"
@@ -194,7 +200,6 @@ const CreateView = ({ onSearch }: CreateViewProps) => {
 };
 
 export default CreateView;
-
 
 
 

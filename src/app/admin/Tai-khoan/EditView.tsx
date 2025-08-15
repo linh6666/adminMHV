@@ -13,7 +13,7 @@ import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { API_ROUTE } from "../../../../const/apiRouter";
 import { api } from "../../../../library/axios";
 import { CreateUserPayload } from "../../../../api/apicreateuser";
@@ -43,6 +43,8 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
     },
   });
 
+  const formRef = useRef(form); // Sử dụng useRef để giữ form ổn định
+
   /** Submit cập nhật user */
   const handleSubmit = async (values: CreateUserPayload) => {
     open();
@@ -68,7 +70,7 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
       const response = await api.get(url);
       const userData = response.data;
 
-      form.setValues({
+      formRef.current.setValues({
         email: userData.email || "",
         full_name: userData.full_name || "",
         phone: userData.phone || "",
@@ -84,7 +86,7 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
     } finally {
       close();
     }
-  }, [id, open, close]); // Không đưa form vào dependency để tránh loop
+  }, [id, open, close]); // Không thêm form vào dependency để tránh loop
 
   /** Chỉ gọi khi id thay đổi */
   useEffect(() => {

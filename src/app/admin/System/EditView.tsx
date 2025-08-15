@@ -11,7 +11,7 @@ import { useForm, isNotEmpty } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { API_ROUTE } from "../../../../const/apiRouter";
 import { api } from "../../../../library/axios";
 import { CreateUserPayload } from "../../../../api/apicreatesystem";
@@ -34,6 +34,8 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
       description: isNotEmpty("Tên vai trò không được để trống"),
     },
   });
+
+  const formRef = useRef(form); // Sử dụng useRef để giữ form ổn định
 
   /** Gọi API update user */
   const handleSubmit = async (values: CreateUserPayload) => {
@@ -60,7 +62,7 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
       const response = await api.get(url);
       const userData = response.data;
 
-      form.setValues({
+      formRef.current.setValues({
         rank_total: userData.rank_total ?? 0,
         description: userData.description || "",
       });
@@ -71,12 +73,12 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
     } finally {
       close();
     }
-  }, [id, open, close]); // KHÔNG đưa form vào dependency để tránh loop
+  }, [id, open, close]); // Không thêm form vào dependency để tránh loop
 
   /** Chỉ gọi API khi id thay đổi */
   useEffect(() => {
     fetchUserDetail();
-  }, [fetchUserDetail]);
+  }, [fetchUserDetail]); // Chỉ theo dõi fetchUserDetail
 
   return (
     <Box
@@ -133,5 +135,4 @@ const EditView = ({ onSearch, id }: EditViewProps) => {
 };
 
 export default EditView;
-
 
