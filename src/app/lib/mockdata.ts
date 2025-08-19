@@ -26,16 +26,16 @@ export const mockdata: NavItem[] = [
     icon: IconUser,
     initiallyOpened: true,
     links: [
-      { label: "Quản lý người dùng và phân quyền ", link: "/admin/Tai-khoan" },
+      { label: "Phân quyền người dùng  ", link: "/admin/Tai-khoan" },
     ],
   },
   {
-    label: "Quản lý khách hàng",
+    label: "Cấu hình phân quyền",
     icon: IconNotes,
     initiallyOpened: true,
     links: [
-      { label: "Danh sách khách hàng role", link: "/admin/users" },
-      { label: "Danh sách nhóm khách hàng system", link: "/admin/System" },
+      { label: "Phân quyền dự án", link: "/admin/users" },
+      { label: "Phân quyền hiển thị", link: "/admin/System" },
   
     ],
   },
@@ -46,7 +46,7 @@ export const mockdata: NavItem[] = [
     links: [
      
       { label: "Danh sách dự án", link: "/admin/Du-an" },
-         { label: "Danh sách Người dùng dự án ", link: "/admin/UserProject" }, 
+         { label: "Vai trò người dùng trong dự án ", link: "/admin/UserProject" }, 
   
 
     ],
